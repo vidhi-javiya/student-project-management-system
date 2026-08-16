@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#edf4ff;
+}
+
+.login-page{
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#0f172a,#2563eb,#60a5fa);
+    overflow:hidden;
+}
+
+/*================ LEFT SIDE =================*/
+
+.left-side{
+    width:55%;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    color:white;
+    padding:60px;
+    animation:slideLeft 1s ease;
+}
+
+.left-side h1{
+    font-size:48px;
+    font-weight:700;
+    margin:20px 0;
+    text-align:center;
+}
+
+.left-side p{
+    width:80%;
+    text-align:center;
+    font-size:18px;
+    line-height:32px;
+    opacity:.9;
+}
+
+.left-side img{
+    width:75%;
+    max-width:520px;
+    margin-top:40px;
+    animation:float 4s ease-in-out infinite;
+}
+
+.school-icon{
+    font-size:80px !important;
+    color:white;
+}
+
+/*================ LOGIN CARD =================*/
+
+.login-box{
+    width:430px;
+    padding:40px;
+    border-radius:25px !important;
+    background:rgba(255,255,255,.95) !important;
+    backdrop-filter:blur(12px);
+    box-shadow:0 15px 40px rgba(0,0,0,.25) !important;
+    animation:slideRight 1s ease;
+    transition:.4s;
+}
+
+.login-box:hover{
+    transform:translateY(-6px);
+    box-shadow:0 20px 50px rgba(0,0,0,.30) !important;
+}
+
+.title{
+    text-align:center;
+    color:#0f172a;
+    font-weight:700 !important;
+    margin-bottom:5px !important;
+}
+
+.subtitle{
+    text-align:center;
+    color:#64748b;
+    margin-bottom:20px !important;
+}
+
+/*================ INPUTS =================*/
+
+.MuiTextField-root,
+.MuiFormControl-root{
+    margin-top:18px !important;
+}
+
+.MuiOutlinedInput-root{
+    border-radius:12px !important;
+    transition:.3s;
+}
+
+.MuiOutlinedInput-root:hover{
+    transform:scale(1.02);
+}
+
+.MuiOutlinedInput-root.Mui-focused fieldset{
+    border:2px solid #2563eb !important;
+    box-shadow:0 0 10px rgba(37,99,235,.3);
+}
+
+.MuiInputLabel-root.Mui-focused{
+    color:#2563eb !important;
+}
+
+/*================ FORGOT =================*/
+
+.forgot{
+    text-align:right;
+    margin-top:10px;
+    margin-bottom:25px;
+    color:#2563eb;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.forgot:hover{
+    color:#1d4ed8;
+    text-decoration:underline;
+}
+
+/*================ BUTTON =================*/
+
+.login-btn{
+    height:55px;
+    border-radius:12px !important;
+    font-size:17px !important;
+    font-weight:700 !important;
+    background:linear-gradient(90deg,#2563eb,#3b82f6) !important;
+    transition:.4s !important;
+    letter-spacing:1px;
+}
+
+.login-btn:hover{
+    transform:translateY(-3px);
+    background:linear-gradient(90deg,#1d4ed8,#2563eb) !important;
+    box-shadow:0 10px 20px rgba(37,99,235,.4);
+}
+
+/*================ ANIMATION =================*/
+
+@keyframes float{
+
+    0%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-15px);
+    }
+
+    100%{
+        transform:translateY(0);
+    }
+
+}
+
+@keyframes slideLeft{
+
+    from{
+        opacity:0;
+        transform:translateX(-100px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateX(0);
+    }
+
+}
+
+@keyframes slideRight{
+
+    from{
+        opacity:0;
+        transform:translateX(100px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateX(0);
+    }
+
+}
+
+/*================ RESPONSIVE =================*/
+
+@media(max-width:992px){
+
+    .left-side{
+        display:none;
+    }
+
+    .login-page{
+        padding:20px;
+    }
+
+    .login-box{
+        width:100%;
+        max-width:430px;
+    }
+
+}
+
+@media(max-width:500px){
+
+    .login-box{
+        padding:25px;
+        border-radius:18px !important;
+    }
+
+    .title{
+        font-size:28px !important;
+    }
+
+    .subtitle{
+        font-size:14px;
+    }
+
+}
+.forgot{
+    display: block;
+    text-align: right;
+    margin-top: 12px;
+    margin-bottom: 25px;  
+    color: #2563eb;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: link;
+    transition: 0.3s;
+}
+
+.forgot:hover{
+    color: #1d4ed8;
+    text-decoration: none; 
+}
+
+.login-btn{
+    margin-top: 10px !important;
+}

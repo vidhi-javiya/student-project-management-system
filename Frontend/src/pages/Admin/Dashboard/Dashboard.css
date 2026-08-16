@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#f4f7fc;
+}
+
+.dashboard-layout{
+    display:flex;
+}
+
+.main-content{
+    flex:1;
+    margin-left:270px;
+}
+
+.dashboard{
+    margin-top:20px;
+    padding:20px 30px 30px;
+    min-height:calc(100vh - 80px);
+    background:#f4f7fc;
+    display:flex;
+    flex-direction:column;
+}
+
+.dashboard-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.dashboard-header h1{
+    font-size:32px;
+    font-weight:700;
+    color:#1e293b;
+    margin:0;
+}
+
+.dashboard-header p{
+    margin-top:5px;
+    font-size:16px;
+    color:#64748b;
+}
+
+.table-box{
+    margin-top:25px;
+    background:#fff;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.table-box h2{
+    margin-bottom:20px;
+    color:#1e293b;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+thead{
+    background:#2563eb;
+    color:#fff;
+}
+
+thead th{
+    padding:16px;
+    text-align:left;
+}
+
+tbody td{
+    padding:15px;
+    border-bottom:1px solid #eee;
+}
+
+tbody tr{
+    transition:0.3s;
+}
+
+tbody tr:hover{
+    background:#eef5ff;
+}
+
+.active,
+.completed,
+.pending{
+    padding:6px 15px;
+    border-radius:30px;
+    font-size:13px;
+    font-weight:600;
+}
+
+.active{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.completed{
+    background:#dbeafe;
+    color:#1d4ed8;
+}
+
+.pending{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.footer{
+    margin-top:auto;
+}
+
+@media (max-width:992px){
+
+    .main-content{
+        margin-left:0;
+    }
+
+    .dashboard{
+        margin-top:20px;
+        padding:20px;
+    }
+}
+
+@media (max-width:768px){
+
+    .dashboard-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:10px;
+    }
+
+    .dashboard-header h1{
+        font-size:28px;
+    }
+
+    table{
+        display:block;
+        overflow-x:auto;
+    }
+}
+
+@media (max-width:480px){
+
+    .dashboard{
+        padding:15px;
+    }
+
+    .dashboard-header h1{
+        font-size:24px;
+    }
+}

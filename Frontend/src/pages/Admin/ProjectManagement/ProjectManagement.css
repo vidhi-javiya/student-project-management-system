@@ -1,0 +1,457 @@
+/* ==========================================
+   Global Reset & Layout Settings
+   ========================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f6f9;
+  color: #2d3748;
+}
+
+/* .main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: all 0.3s ease;
+} */
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: all 0.3s ease;
+  padding-top: 90px;   /* Navbar height */
+}
+
+.project-page {
+  
+  padding: 28px;
+  flex: 1;
+}
+
+/* Breadcrumb */
+
+.breadcrumb {
+  font-size: 16px;
+  margin-bottom: 22px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.breadcrumb a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.breadcrumb span {
+  color: #64748b;
+}
+
+/* Card & Header */
+
+.project-card,
+.table-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  padding: 28px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.project-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+/* Add Button */
+
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 12px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+}
+
+.add-btn:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* ==========================================
+   Filters Card & Single Line Alignment
+   ========================================== */
+
+.filter-box,
+.filters-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: flex-end; /* All elements aligned at bottom baseline */
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.form-group,
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 180px;
+}
+
+/* Status dropdown box size restriction */
+.form-group:has(select),
+.filter-group:has(select) {
+  flex: none;
+  width: 180px;
+}
+
+.form-group label,
+.filter-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select,
+.filter-group select,
+.input-with-icon input {
+  width: 100%;
+  height: 40px; /* Fixed standard height */
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  background-color: #ffffff;
+  color: #1e293b;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.filter-group select:focus,
+.input-with-icon input:focus {
+  border-color: #2563eb;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: #94a3b8;
+  font-size: 1.2rem !important;
+}
+
+.input-with-icon input {
+  padding-left: 36px;
+}
+
+/* Filter Action Buttons Layout */
+
+.filter-buttons,
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  height: 40px;
+}
+
+.apply-btn {
+  background-color: #3b82f6;
+  color: #ffffff !important;
+  border: none;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.apply-btn:hover {
+  background-color: #2563eb;
+}
+
+/* Reset Button - Clean single line + White text */
+.reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background-color: #2563eb;
+  color: #ffffff !important; /* Forces pure white font */
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.reset-btn:hover {
+  background-color: #1d4ed8;
+  color: #ffffff !important;
+}
+
+/* ==========================================
+   Table Container & Table Styles
+   ========================================== */
+
+.table-container,
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.project-table,
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+  background-color: #ffffff;
+}
+
+.project-table thead tr,
+.tasks-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 700;
+  padding: 14px 16px;
+  border-bottom: 2px solid #cbd5e1;
+  white-space: nowrap;
+}
+
+.project-table td,
+.tasks-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  color: #334155;
+}
+
+/* Title & Description */
+
+.project-title-box,
+.task-title-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 280px;
+}
+
+.p-title,
+.task-title-cell strong {
+  font-weight: 700;
+  color: #0f172a;
+  font-size: 16px;
+  display: block;
+}
+
+.p-desc,
+.task-desc-sub {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+  display: block;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Status Badges */
+
+.status {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.status.in-progress {
+  background-color: #e0f2fe;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
+}
+
+.status.completed {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.status.not-started {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+/* Assigned Users */
+
+.assigned-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.person-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.faculty-icon {
+  color: #059669 !important;
+  font-size: 20px !important;
+}
+
+.student-icon {
+  color: #0284c7 !important;
+  font-size: 20px !important;
+}
+
+/* Progress Bar */
+
+.progress-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 140px;
+}
+
+.task-count {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #10b981;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* Table Actions */
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-btn,
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.edit-btn {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.edit-btn:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.delete-btn {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.delete-btn:hover {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+/* No Data State */
+
+.no-data {
+  text-align: center;
+  padding: 28px;
+  color: #64748b;
+  font-weight: 600;
+  font-size: 16px;
+}

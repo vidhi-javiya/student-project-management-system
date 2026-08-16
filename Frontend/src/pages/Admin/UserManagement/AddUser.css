@@ -1,0 +1,528 @@
+/* ==========================================
+   ADD USER PAGE
+========================================== */
+
+.add-user-page {
+    padding: 20px 30px 30px;
+    margin-top: 0;
+    background: #f8fafc;
+    min-height: calc(100vh - 120px);
+
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont,
+        'Segoe UI', Roboto, sans-serif;
+
+    color: #1e293b;
+    box-sizing: border-box;
+}
+
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.page-header {
+    margin-bottom: 15px;
+}
+
+.page-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+
+    margin: 0 0 6px;
+}
+
+.breadcrumb {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0;
+}
+
+.breadcrumb a {
+    color: #64748b;
+    text-decoration: none;
+    font-weight: 500;
+
+    transition: 0.2s ease;
+}
+
+.breadcrumb a:hover {
+    color: #4f46e5;
+}
+
+.active-page {
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   USER FORM CARD
+========================================== */
+
+.add-user-card {
+    width: 100%;
+    max-width: 850px;
+
+    margin: 10px auto;
+
+    padding: 30px 35px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================
+   CARD TITLE
+========================================== */
+
+.add-user-card h3 {
+    margin: 0 0 25px;
+
+    padding-bottom: 13px;
+
+    font-size: 19px;
+    font-weight: 600;
+
+    color: #334155;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+/* ==========================================
+   ERROR MESSAGE
+========================================== */
+
+.error-alert {
+    margin-bottom: 20px;
+
+    padding: 12px 15px;
+
+    background: #fef2f2;
+    color: #b91c1c;
+
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* ==========================================
+   FORM
+========================================== */
+
+.add-user-card form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+
+/* ==========================================
+   FORM ROW
+========================================== */
+
+.form-row {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+}
+
+
+/* ==========================================
+   FORM GROUP
+========================================== */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+/* ==========================================
+   LABEL
+========================================== */
+
+.form-group label {
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #374151;
+}
+
+
+/* ==========================================
+   INPUT / SELECT
+========================================== */
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    height: 45px;
+
+    padding: 11px 14px;
+
+    background: #f8fafc;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+
+    outline: none;
+
+    color: #1e293b;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    box-sizing: border-box;
+
+    transition: all 0.25s ease;
+}
+
+
+/* ==========================================
+   FILE INPUT
+========================================== */
+
+.form-group input[type="file"] {
+    height: auto;
+
+    padding: 9px 12px;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================
+   SELECT
+========================================== */
+
+.form-group select {
+    cursor: pointer;
+}
+
+
+/* ==========================================
+   PLACEHOLDER
+========================================== */
+
+.form-group input::placeholder {
+    color: #94a3b8;
+}
+
+
+/* ==========================================
+   HOVER
+========================================== */
+
+.form-group input:hover,
+.form-group select:hover {
+    border-color: #94a3b8;
+
+    background: #ffffff;
+}
+
+
+/* ==========================================
+   FOCUS
+========================================== */
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #4f46e5;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 3px rgba(79, 70, 229, 0.10);
+}
+
+
+/* ==========================================
+   RADIO BUTTON
+========================================== */
+
+.form-group input[type="radio"] {
+    width: auto;
+    height: auto;
+
+    margin-right: 6px;
+
+    accent-color: #4f46e5;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================
+   CHECKBOX
+========================================== */
+
+.form-group input[type="checkbox"] {
+    width: auto;
+    height: auto;
+
+    margin-right: 6px;
+
+    accent-color: #4f46e5;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================
+   PROFILE IMAGE PREVIEW
+========================================== */
+
+.form-group img {
+    width: 75px !important;
+    height: 75px !important;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 2px solid #4f46e5 !important;
+
+    box-shadow:
+        0 4px 12px rgba(79, 70, 229, 0.18);
+
+    transition: transform 0.25s ease;
+}
+
+.form-group img:hover {
+    transform: scale(1.05);
+}
+
+
+/* ==========================================
+   BUTTON GROUP
+========================================== */
+
+.button-group {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 8px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #f1f5f9;
+}
+
+
+/* ==========================================
+   SAVE BUTTON
+========================================== */
+
+.save-btn {
+    min-width: 120px;
+
+    padding: 11px 22px;
+
+    background: #4f46e5;
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 7px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: all 0.25s ease;
+
+    box-shadow:
+        0 3px 10px rgba(79, 70, 229, 0.20);
+}
+
+.save-btn:hover {
+    background: #3730a3;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 14px rgba(79, 70, 229, 0.30);
+}
+
+.save-btn:active {
+    transform: translateY(0);
+}
+
+
+/* ==========================================
+   DISABLED SAVE BUTTON
+========================================== */
+
+.save-btn:disabled {
+    background: #a5b4fc;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* ==========================================
+   BACK BUTTON
+========================================== */
+
+.back-btn {
+    min-width: 100px;
+
+    padding: 10px 20px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #f1f5f9;
+
+    color: #475569;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition: all 0.25s ease;
+}
+
+.back-btn:hover {
+    background: #e2e8f0;
+
+    color: #1e293b;
+
+    border-color: #94a3b8;
+
+    transform: translateY(-1px);
+}
+
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 900px) {
+
+    .add-user-page {
+        padding: 20px 25px 30px;
+    }
+
+    .add-user-card {
+        max-width: 100%;
+    }
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 768px) {
+
+    .add-user-page {
+        padding: 18px 15px 25px;
+    }
+
+    .page-header {
+        margin-bottom: 12px;
+    }
+
+    .page-header h2 {
+        font-size: 24px;
+    }
+
+    .add-user-card {
+        padding: 25px 20px;
+
+        margin: 8px auto;
+
+        border-radius: 10px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+
+        gap: 18px;
+    }
+
+    .button-group {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .save-btn,
+    .back-btn {
+        width: 100%;
+    }
+}
+
+
+/* ==========================================
+   SMALL MOBILE
+========================================== */
+
+@media (max-width: 480px) {
+
+    .add-user-page {
+        padding: 15px 10px 20px;
+    }
+
+    .page-header h2 {
+        font-size: 22px;
+    }
+
+    .breadcrumb {
+        font-size: 13px;
+    }
+
+    .add-user-card {
+        padding: 20px 15px;
+    }
+
+    .add-user-card h3 {
+        font-size: 17px;
+    }
+
+    .form-group input,
+    .form-group select {
+        font-size: 13px;
+    }
+}

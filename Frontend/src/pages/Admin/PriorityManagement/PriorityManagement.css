@@ -1,0 +1,291 @@
+/* ==========================================================================
+   1. Main Layout & Page Structure
+   ========================================================================== */
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f4f6f9;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #333333;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevents flex overflow */
+  transition: all 0.3s ease;
+}
+
+.page-content {
+  padding: 24px;
+  flex: 1;
+}
+
+/* ==========================================================================
+   2. Breadcrumb & Page Header
+   ========================================================================== */
+.breadcrumb {
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 20px;
+}
+
+.breadcrumb .home-link {
+  color: #4f46e5;
+  cursor: pointer;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb .home-link:hover {
+  color: #3730a3;
+  text-decoration: underline;
+}
+
+.page-header {
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 12px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* ==========================================================================
+   3. Main Priority Card & Form Controls
+   ========================================================================== */
+.priority-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  border: 1px solid #e5e7eb;
+}
+
+.form-group {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.form-group input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.form-group button {
+  padding: 10px 20px;
+  background-color: #4f46e5;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.form-group button:hover {
+  background-color: #4338ca;
+}
+
+.form-group button:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================================
+   4. Table Styling
+   ========================================================================== */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #edf2f7;
+  font-size: 14px;
+}
+
+th {
+  background-color: #f9fafb;
+  color: #4b5563;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+}
+
+th:first-child {
+  border-top-left-radius: 8px;
+}
+
+th:last-child {
+  border-top-right-radius: 8px;
+}
+
+tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Empty State */
+tbody td[colspan="5"] {
+  text-align: center;
+  color: #9ca3af;
+  padding: 30px;
+  font-style: italic;
+}
+
+/* ==========================================================================
+   5. Action Buttons (Edit & Delete)
+   ========================================================================== */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-buttons button {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.edit-btn {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+.edit-btn:hover {
+  background-color: #c7d2fe;
+}
+
+.delete-btn {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.delete-btn:hover {
+  background-color: #fecaca;
+}
+
+/* ==========================================================================
+   6. Priority Badges Styling (Preview Column)
+   ========================================================================== */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+
+/* Red Badge for High Priority */
+.badge-danger {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+}
+
+/* Yellow/Amber Badge for Medium Priority */
+.badge-warning {
+  background-color: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+/* Green Badge for Low Priority */
+.badge-success {
+  background-color: #d1fae5;
+  color: #059669;
+  border: 1px solid #6ee7b7;
+}
+
+/* Fallback / Default Badge Styling */
+.badge-secondary {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+/* ==========================================================================
+   7. Responsive Design (Mobile & Tablet)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .page-content {
+    padding: 16px;
+  }
+
+  .form-group {
+    flex-direction: column;
+  }
+
+  .form-group input,
+  .form-group button {
+    width: 100%;
+  }
+
+  .priority-card {
+    overflow-x: auto;
+  }
+}
+
+
+.badge{
+    display:inline-block;
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    text-align:center;
+}
+
+.badge-danger{
+    background:#fee2e2;
+    color:#dc2626;
+    border:1px solid #fca5a5;
+}
+
+.badge-warning{
+    background:#fef3c7;
+    color:#d97706;
+    border:1px solid #fde68a;
+}
+
+.badge-success{
+    background:#dcfce7;
+    color:#15803d;
+    border:1px solid #86efac;
+}
