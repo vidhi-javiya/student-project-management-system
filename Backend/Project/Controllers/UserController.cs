@@ -54,13 +54,11 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                // ૧. ઈમેલ ડુપ્લિકેટ ચેક
                 if (await _context.SPM_Users.AnyAsync(u => u.Email == email))
                 {
-                    return BadRequest("આ ઈમેલ આઈડી પહેલેથી રજીસ્ટર છે.");
+                    return BadRequest("Already Email Register....");
                 }
 
-                // ૨. ઈમેજ અપલોડ ફોલ્ડર પાથ
                 string wwwRootPath = _environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
                 if (!Directory.Exists(wwwRootPath))
                 {
@@ -112,12 +110,12 @@ namespace WebApplication1.Controllers
 
             if (existingUser == null)
             {
-                return NotFound("યુઝર મળ્યો નથી.");
+                return NotFound("Not Found !.");
             }
 
             if (await _context.SPM_Users.AnyAsync(u => u.Email == email && u.UserId != id))
             {
-                return BadRequest("આ ઈમેલ આઈડી બીજા યુઝર સાથે રજીસ્ટર છે.");
+                return BadRequest("All ready this email register by another user");
             }
 
             existingUser.FullName = fullName;

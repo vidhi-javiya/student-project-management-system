@@ -321,3 +321,4 @@ D:\student-project-management-system\Backend\Project\bin\Debug\net10.0\Swashbuck
 D:\student-project-management-system\Backend\Project\bin\Debug\net10.0\Swashbuckle.AspNetCore.SwaggerUI.dll
 D:\student-project-management-system\Backend\Project\bin\Debug\net10.0\Scalar.AspNetCore.dll
 D:\student-project-management-system\Backend\Project\bin\Debug\net10.0\WebApplication1.staticwebassets.runtime.json
+D:\student-project-management-system\Backend\Project\obj\Debug\net10.0\WebApplication1.sourcelink.json
