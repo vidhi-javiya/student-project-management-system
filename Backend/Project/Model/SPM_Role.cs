@@ -9,12 +9,13 @@ namespace WebApplication1.Model
         [Key]
         public int RoleId { get; set; }
 
-        [Required]
-        [StringLength(50)]
-        public string RoleName { get; set; }
+        public string RoleName { get; set; } = string.Empty;
 
-        [StringLength(250)]
         public string? Description { get; set; }
+
+        // --- Navigation Property for SPM_User ---
+        public virtual ICollection<SPM_User> Users { get; set; } = new List<SPM_User>();
+
         public virtual ICollection<SPM_UserRole> SPM_UserRoles { get; set; } = new List<SPM_UserRole>();
     }
 }

@@ -13,10 +13,136 @@
     }
   ],
   "paths": {
+    "/api/v1/versioningdemo": {
+      "get": {
+        "tags": [
+          "VersioningDemo"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/versioningdemo/query-example": {
+      "get": {
+        "tags": [
+          "VersioningDemo"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/versioningdemo/header-example": {
+      "get": {
+        "tags": [
+          "VersioningDemo"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Priority": {
       "get": {
         "tags": [
           "Priority"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -27,6 +153,22 @@
       "post": {
         "tags": [
           "Priority"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -73,6 +215,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -97,6 +253,20 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -143,6 +313,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -156,6 +340,22 @@
       "get": {
         "tags": [
           "Project"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -192,6 +392,22 @@
       "post": {
         "tags": [
           "Project"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -255,6 +471,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -296,6 +526,20 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -342,6 +586,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -356,6 +614,22 @@
         "tags": [
           "Role"
         ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -365,6 +639,22 @@
       "post": {
         "tags": [
           "Role"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -411,6 +701,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -435,6 +739,20 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -481,6 +799,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -495,6 +827,22 @@
         "tags": [
           "Status"
         ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -504,6 +852,22 @@
       "post": {
         "tags": [
           "Status"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -550,6 +914,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -574,6 +952,20 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -620,6 +1012,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -645,6 +1051,20 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -683,6 +1103,22 @@
       "post": {
         "tags": [
           "Task"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -743,6 +1179,20 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -782,23 +1232,164 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/TaskDto"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TaskDto"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/TaskDto"
+                "type": "object",
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "TaskId": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)$",
+                        "type": [
+                          "integer",
+                          "string"
+                        ],
+                        "format": "int32"
+                      },
+                      "ProjectId": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)$",
+                        "type": [
+                          "integer",
+                          "string"
+                        ],
+                        "format": "int32"
+                      },
+                      "ProjectTitle": {
+                        "type": "string"
+                      },
+                      "AssignedTo": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)$",
+                        "type": [
+                          "integer",
+                          "string"
+                        ],
+                        "format": "int32"
+                      },
+                      "AssignedStudentName": {
+                        "type": "string"
+                      },
+                      "TaskTitle": {
+                        "maxLength": 200,
+                        "minLength": 0,
+                        "type": "string"
+                      },
+                      "TaskDescription": {
+                        "type": "string"
+                      },
+                      "TaskStatus": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)$",
+                        "type": [
+                          "integer",
+                          "string"
+                        ],
+                        "format": "int32"
+                      },
+                      "StatusName": {
+                        "type": "string"
+                      },
+                      "PriorityID": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)$",
+                        "type": [
+                          "integer",
+                          "string"
+                        ],
+                        "format": "int32"
+                      },
+                      "PriorityName": {
+                        "type": "string"
+                      },
+                      "AssignedScore": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": [
+                          "number",
+                          "string"
+                        ],
+                        "format": "double"
+                      },
+                      "EarnedScore": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": [
+                          "number",
+                          "string"
+                        ],
+                        "format": "double"
+                      },
+                      "Rating": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": [
+                          "number",
+                          "string"
+                        ],
+                        "format": "double"
+                      },
+                      "ProgressPercentage": {
+                        "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+                        "type": [
+                          "number",
+                          "string"
+                        ],
+                        "format": "double"
+                      },
+                      "StartDate": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "DueDate": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "CompletedDate": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "FacultyRemarks": {
+                        "maxLength": 500,
+                        "minLength": 0,
+                        "type": "string"
+                      },
+                      "StudentRemarks": {
+                        "maxLength": 500,
+                        "minLength": 0,
+                        "type": "string"
+                      },
+                      "FileUrl": {
+                        "maxLength": 500,
+                        "minLength": 0,
+                        "type": "string"
+                      },
+                      "IsDeleted": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "file": {
+                        "$ref": "#/components/schemas/IFormFile"
+                      }
+                    }
+                  }
+                ]
               }
             }
           },
@@ -824,6 +1415,20 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -847,6 +1452,20 @@
               "pattern": "^-?(?:0|[1-9]\\d*)$",
               "type": "integer",
               "format": "int32"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -897,6 +1516,22 @@
         "tags": [
           "User"
         ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -906,6 +1541,22 @@
       "post": {
         "tags": [
           "User"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -992,6 +1643,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1016,6 +1681,20 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1102,6 +1781,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1115,6 +1808,22 @@
       "get": {
         "tags": [
           "UserRole"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -1151,6 +1860,22 @@
       "post": {
         "tags": [
           "UserRole"
+        ],
+        "parameters": [
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -1214,6 +1939,20 @@
               ],
               "format": "int32"
             }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -1255,6 +1994,20 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1300,6 +2053,20 @@
                 "string"
               ],
               "format": "int32"
+            }
+          },
+          {
+            "name": "api-version",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Version",
+            "in": "header",
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -1424,10 +2191,6 @@
         }
       },
       "SPM_Priority": {
-        "required": [
-          "priorityName",
-          "priortyCssClass"
-        ],
         "type": "object",
         "properties": {
           "priorityID": {
@@ -1439,13 +2202,9 @@
             "format": "int32"
           },
           "priorityName": {
-            "maxLength": 20,
-            "minLength": 0,
             "type": "string"
           },
           "priortyCssClass": {
-            "maxLength": 20,
-            "minLength": 0,
             "type": "string"
           },
           "tasks": {
@@ -1457,18 +2216,6 @@
         }
       },
       "SPM_Project": {
-        "required": [
-          "projectTitle",
-          "studentId",
-          "facultyId",
-          "assignedDate",
-          "projectStatus",
-          "startDate",
-          "endDate",
-          "totalTasks",
-          "completedTasks",
-          "progressPercentage"
-        ],
         "type": "object",
         "properties": {
           "projectId": {
@@ -1480,8 +2227,6 @@
             "format": "int32"
           },
           "projectTitle": {
-            "maxLength": 200,
-            "minLength": 0,
             "type": "string"
           },
           "description": {
@@ -1595,9 +2340,6 @@
         }
       },
       "SPM_Role": {
-        "required": [
-          "roleName"
-        ],
         "type": "object",
         "properties": {
           "roleId": {
@@ -1609,17 +2351,19 @@
             "format": "int32"
           },
           "roleName": {
-            "maxLength": 50,
-            "minLength": 0,
             "type": "string"
           },
           "description": {
-            "maxLength": 250,
-            "minLength": 0,
             "type": [
               "null",
               "string"
             ]
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SPM_User"
+            }
           },
           "spM_UserRoles": {
             "type": "array",
@@ -1630,10 +2374,6 @@
         }
       },
       "SPM_Status": {
-        "required": [
-          "statusName",
-          "statusCssClass"
-        ],
         "type": "object",
         "properties": {
           "statusID": {
@@ -1645,13 +2385,9 @@
             "format": "int32"
           },
           "statusName": {
-            "maxLength": 20,
-            "minLength": 0,
             "type": "string"
           },
           "statusCssClass": {
-            "maxLength": 100,
-            "minLength": 0,
             "type": "string"
           },
           "projects": {
@@ -1672,14 +2408,6 @@
         }
       },
       "SPM_Task": {
-        "required": [
-          "projectId",
-          "taskTitle",
-          "taskStatus",
-          "priorityID",
-          "assignedScore",
-          "progressPercentage"
-        ],
         "type": "object",
         "properties": {
           "taskId": {
@@ -1698,9 +2426,36 @@
             ],
             "format": "int32"
           },
+          "project": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SPM_Project"
+              }
+            ]
+          },
+          "assignedTo": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "assignedUser": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SPM_User"
+              }
+            ]
+          },
           "taskTitle": {
-            "maxLength": 200,
-            "minLength": 0,
             "type": "string"
           },
           "taskDescription": {
@@ -1717,6 +2472,16 @@
             ],
             "format": "int32"
           },
+          "status": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SPM_Status"
+              }
+            ]
+          },
           "priorityID": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": [
@@ -1724,6 +2489,16 @@
               "string"
             ],
             "format": "int32"
+          },
+          "priority": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SPM_Priority"
+              }
+            ]
           },
           "assignedScore": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
@@ -1734,6 +2509,15 @@
             "format": "double"
           },
           "earnedScore": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "rating": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "null",
@@ -1772,16 +2556,18 @@
             "format": "date-time"
           },
           "facultyRemarks": {
-            "maxLength": 500,
-            "minLength": 0,
             "type": [
               "null",
               "string"
             ]
           },
           "studentRemarks": {
-            "maxLength": 500,
-            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fileUrl": {
             "type": [
               "null",
               "string"
@@ -1792,48 +2578,10 @@
               "null",
               "boolean"
             ]
-          },
-          "project": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/SPM_Project"
-              }
-            ]
-          },
-          "status": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/SPM_Status"
-              }
-            ]
-          },
-          "priority": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/SPM_Priority"
-              }
-            ]
           }
         }
       },
       "SPM_User": {
-        "required": [
-          "fullName",
-          "email",
-          "password",
-          "mobileNumber",
-          "profilePicturePath",
-          "isActive"
-        ],
         "type": "object",
         "properties": {
           "userId": {
@@ -1845,26 +2593,18 @@
             "format": "int32"
           },
           "fullName": {
-            "maxLength": 150,
-            "minLength": 0,
             "type": "string"
           },
           "email": {
-            "maxLength": 150,
-            "minLength": 0,
             "type": "string"
           },
           "password": {
             "type": "string"
           },
           "mobileNumber": {
-            "maxLength": 15,
-            "minLength": 0,
             "type": "string"
           },
           "profilePicturePath": {
-            "maxLength": 500,
-            "minLength": 0,
             "type": "string"
           },
           "isActive": {
@@ -1874,6 +2614,25 @@
             "type": [
               "null",
               "boolean"
+            ]
+          },
+          "roleId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "role": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/SPM_Role"
+              }
             ]
           },
           "studentProjects": {
@@ -1899,62 +2658,19 @@
             "items": {
               "$ref": "#/components/schemas/SPM_UserRole"
             }
+          },
+          "assignedTasks": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SPM_Task"
+            }
           }
         }
       },
-      "SPM_UserRole": {
-        "required": [
-          "roleId",
-          "userId"
-        ],
-        "type": "object",
-        "properties": {
-          "rolePermissionId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "roleId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "userId": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "role": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/SPM_Role"
-              }
-            ]
-          },
-          "user": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/SPM_User"
-              }
-            ]
-          }
-        }
-      },
+      "SPM_UserRole": { },
       "TaskDto": {
         "required": [
           "projectId",
@@ -1982,6 +2698,21 @@
             "format": "int32"
           },
           "projectTitle": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "assignedTo": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "assignedStudentName": {
             "type": [
               "null",
               "string"
@@ -2043,6 +2774,15 @@
             ],
             "format": "double"
           },
+          "rating": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
           "progressPercentage": {
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
@@ -2088,11 +2828,33 @@
               "string"
             ]
           },
+          "fileUrl": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          },
           "isDeleted": {
             "type": [
               "null",
               "boolean"
             ]
+          }
+        }
+      },
+      "UserLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
           }
         }
       },
@@ -2125,9 +2887,23 @@
           }
         }
       }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "Enter your JWT token here (no need to type 'Bearer' prefix)",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
     }
   },
   "tags": [
+    {
+      "name": "VersioningDemo"
+    },
+    {
+      "name": "Auth"
+    },
     {
       "name": "Priority"
     },

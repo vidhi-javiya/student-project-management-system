@@ -189,11 +189,11 @@ const ProjectManagement = () => {
                         const sDate = formatDate(project.startDate || project.StartDate);
                         const eDate = formatDate(project.endDate || project.EndDate);
                         
-                        // Tasks ની ગણતરી અને Safe Conversions
+                       
                         const cTasks = Number(project.completedTasks ?? project.CompletedTasks ?? 0);
                         const tTasks = Number(project.totalTasks ?? project.TotalTasks ?? 0);
 
-                        // ટકાવારીની ગણતરી (જો Total Tasks > 0 હોય તો જ ચાલશે)
+                      
                         const computedProgress = tTasks > 0
                           ? Math.min(100, Math.round((cTasks / tTasks) * 100))
                           : 0;

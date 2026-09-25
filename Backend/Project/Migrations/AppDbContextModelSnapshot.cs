@@ -174,6 +174,9 @@ namespace WebApplication1.Migrations
                         .HasPrecision(5, 2)
                         .HasColumnType("decimal(5,2)");
 
+                    b.Property<int?>("AssignedTo")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("CompletedDate")
                         .HasColumnType("datetime2");
 
@@ -185,6 +188,10 @@ namespace WebApplication1.Migrations
                         .HasColumnType("decimal(5,2)");
 
                     b.Property<string>("FacultyRemarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("FileUrl")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -200,6 +207,9 @@ namespace WebApplication1.Migrations
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
+
+                    b.Property<decimal?>("Rating")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
@@ -221,13 +231,15 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("TaskId");
 
+                    b.HasIndex("AssignedTo");
+
                     b.HasIndex("PriorityID");
 
                     b.HasIndex("ProjectId");
 
                     b.HasIndex("TaskStatus");
 
-                    b.ToTable("SPM_Task");
+                    b.ToTable("SPM_Tasks");
                 });
 
             modelBuilder.Entity("WebApplication1.Model.SPM_User", b =>
@@ -268,10 +280,15 @@ namespace WebApplication1.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int?>("RoleId")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId");
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("SPM_User");
                 });
@@ -289,9 +306,6 @@ namespace WebApplication1.Migrations
                         .HasColumnType("int")
                         .HasColumnName("RoleId");
 
-                    b.Property<int?>("SPM_RoleRoleId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("UserId");
@@ -299,8 +313,6 @@ namespace WebApplication1.Migrations
                     b.HasKey("RolePermissionId");
 
                     b.HasIndex("RoleId");
-
-                    b.HasIndex("SPM_RoleRoleId");
 
                     b.HasIndex("UserId");
 
@@ -336,6 +348,11 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Model.SPM_Task", b =>
                 {
+                    b.HasOne("WebApplication1.Model.SPM_User", "AssignedUser")
+                        .WithMany("AssignedTasks")
+                        .HasForeignKey("AssignedTo")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("WebApplication1.Model.SPM_Priority", "Priority")
                         .WithMany("Tasks")
                         .HasForeignKey("PriorityID")
@@ -354,6 +371,8 @@ namespace WebApplication1.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("AssignedUser");
+
                     b.Navigation("Priority");
 
                     b.Navigation("Project");
@@ -361,17 +380,23 @@ namespace WebApplication1.Migrations
                     b.Navigation("Status");
                 });
 
+            modelBuilder.Entity("WebApplication1.Model.SPM_User", b =>
+                {
+                    b.HasOne("WebApplication1.Model.SPM_Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("WebApplication1.Model.SPM_UserRole", b =>
                 {
                     b.HasOne("WebApplication1.Model.SPM_Role", "Role")
-                        .WithMany()
+                        .WithMany("SPM_UserRoles")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("WebApplication1.Model.SPM_Role", null)
-                        .WithMany("SPM_UserRoles")
-                        .HasForeignKey("SPM_RoleRoleId");
 
                     b.HasOne("WebApplication1.Model.SPM_User", "User")
                         .WithMany("SPM_UserRoles")
@@ -397,6 +422,8 @@ namespace WebApplication1.Migrations
             modelBuilder.Entity("WebApplication1.Model.SPM_Role", b =>
                 {
                     b.Navigation("SPM_UserRoles");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("WebApplication1.Model.SPM_Status", b =>
@@ -408,6 +435,8 @@ namespace WebApplication1.Migrations
 
             modelBuilder.Entity("WebApplication1.Model.SPM_User", b =>
                 {
+                    b.Navigation("AssignedTasks");
+
                     b.Navigation("FacultyProjects");
 
                     b.Navigation("SPM_UserRoles");

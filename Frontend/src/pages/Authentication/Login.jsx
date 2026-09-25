@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { setAuthData } from "../../utils/auth"; // auth.js હેલ્પર ફાઈલ માંથી ઇમ્પોર્ટ કર્યું
 
 import {
   Paper,
@@ -13,6 +15,7 @@ import {
   FormControl,
   InputLabel,
   OutlinedInput,
+  Alert,
 } from "@mui/material";
 
 import {
@@ -28,31 +31,55 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(""); 
 
-  // પેજ રીડાયરેક્ટ કરવા માટે useNavigate હૂક
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setErrorMsg(""); 
 
     if (!role || !email || !password) {
-      alert("Please fill all fields.");
+      setErrorMsg("Please fill all fields.");
       return;
     }
 
-    // લોગિન ડેટા સ્થાનિક સ્ટોરેજમાં સાચવી શકાય (જરૂરિયાત મુજબ)
-    localStorage.setItem("userRole", role);
-    localStorage.setItem("isLoggedIn", "true");
+    try {
+      // 1. Backend API  Request 
+      const response = await axios.post("https://localhost:7187/api/Auth/login", {
+        email: email,
+        password: password,
+        role: role,
+      });
 
-    // રોલ પ્રમાણે રીડાયરેક્ટ કરો
-    if (role === "Admin") {
-      navigate("/AdminDashboard");
-    } else if (role === "Faculty") {
-      navigate("/FacultyDashboard");
-    } else if (role === "Student") {
-      navigate("/StudentDashboard");
-    } else {
-      alert("Invalid Role selected!");
+      // 2. if login susses
+      if (response.data.success) {
+        // Token  User Info  localStorage to data save
+        setAuthData(response.data.token, {
+          email: response.data.email,
+          role: response.data.role,
+        });
+
+        // Backend to fatch Role  Navigate the page
+        const userRole = response.data.role;
+
+        if (userRole === "Admin") {
+          navigate("/AdminDashboard");
+        } else if (userRole === "Faculty") {
+          navigate("/FacultyDashboard");
+        } else if (userRole === "Student") {
+          navigate("/StudentDashboard");
+        } else {
+          navigate("/Dashboard");
+        }
+      }
+    } catch (err) {
+      // 3. Backend error handle
+      if (err.response && err.response.data && err.response.data.message) {
+        setErrorMsg(err.response.data.message);
+      } else {
+        setErrorMsg("Server error! Please check if backend is running.");
+      }
     }
   };
 
@@ -82,6 +109,13 @@ const Login = () => {
         </Typography>
 
         <Typography className="subtitle">Login to your account</Typography>
+
+        {/* 🔴 Error Alert Message */}
+        {errorMsg && (
+          <Alert severity="error" style={{ marginBottom: "15px" }}>
+            {errorMsg}
+          </Alert>
+        )}
 
         <form onSubmit={handleLogin}>
           <TextField

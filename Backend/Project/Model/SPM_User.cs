@@ -12,43 +12,37 @@ namespace WebApplication1.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
 
-        [Required]
         [Column(TypeName = "nvarchar(150)")]
-        [StringLength(150)]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
-        [Required]
         [Column(TypeName = "nvarchar(150)")]
-        [StringLength(150)]
-        [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
-        [Required]
         [Column(TypeName = "nvarchar(max)")]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
-        [Required]
         [Column(TypeName = "nvarchar(15)")]
-        [StringLength(15)]
-        public string MobileNumber { get; set; }
+        public string MobileNumber { get; set; } = string.Empty;
 
-
-
-        [Required]
         [Column(TypeName = "nvarchar(500)")]
-        [StringLength(500)]
-        public string ProfilePicturePath { get; set; }
+        public string ProfilePicturePath { get; set; } = string.Empty;
 
-        [Required]
         [Column(TypeName = "bit")]
         public bool IsActive { get; set; }
 
         [Column(TypeName = "bit")]
         public bool? IsDeleted { get; set; }
 
+        // --- Foreign Key for Role ---
+        public int? RoleId { get; set; }
+
+        [ForeignKey("RoleId")]
+        public virtual SPM_Role? Role { get; set; }
+
         public virtual ICollection<SPM_Project>? StudentProjects { get; set; }
         public virtual ICollection<SPM_Project>? FacultyProjects { get; set; }
 
         public virtual ICollection<SPM_UserRole> SPM_UserRoles { get; set; } = new List<SPM_UserRole>();
+        public virtual ICollection<SPM_Task>? AssignedTasks { get; set; }
     }
 }

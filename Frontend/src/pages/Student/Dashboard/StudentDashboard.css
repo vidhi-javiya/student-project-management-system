@@ -1,0 +1,300 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+#spms-student-dashboard {
+  padding: 28px;
+  background-color: #f1f5f9;
+  min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Loader */
+.spms-loader {
+  color: #6366f1 !important;
+}
+
+/* Navigation Back Button */
+.spms-btn-nav {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+  padding: 8px 18px !important;
+}
+
+.spms-btn-nav:hover {
+  background: #f8fafc !important;
+}
+
+/* Gradient Hero Banner */
+.spms-banner-hero {
+  padding: 28px;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #9333ea 100%);
+  color: #ffffff;
+  box-shadow: 0 12px 24px -6px rgba(124, 58, 237, 0.35);
+}
+
+.spms-hero-title {
+  font-weight: 800 !important;
+  letter-spacing: -0.5px;
+}
+
+.spms-hero-sub {
+  color: #e0e7ff;
+  margin-top: 4px;
+}
+
+.spms-role-badge {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px);
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+}
+
+/* Card & Table Scaffolding */
+.spms-main-card {
+  margin-top: 24px;
+  border-radius: 16px !important;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04) !important;
+  padding: 24px;
+  background: #ffffff;
+}
+
+.spms-card-header {
+  font-weight: 800 !important;
+  font-size: 1.25rem !important;
+  color: #1e293b;
+  margin-bottom: 20px !important;
+}
+
+.spms-table-responsive {
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  overflow: hidden;
+}
+
+.spms-thead {
+  background: linear-gradient(90deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.spms-thead .MuiTableCell-head {
+  font-weight: 800;
+  color: #475569;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 16px;
+}
+
+.spms-row {
+  transition: all 0.2s ease;
+}
+
+.spms-row:hover {
+  background-color: #f8fafc !important;
+}
+
+.spms-cell-title {
+  font-weight: 700 !important;
+  color: #0f172a;
+  font-size: 0.9rem !important;
+}
+
+.spms-cell-text {
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+.spms-cell-remark {
+  color: #64748b;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.spms-score-text {
+  color: #475569;
+  display: block;
+}
+
+.spms-empty-cell {
+  padding: 30px !important;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* COLOR-FULL STATUS CHIPS */
+.spms-status-chip {
+  font-weight: 700 !important;
+  border-radius: 8px !important;
+  padding: 4px 8px !important;
+}
+
+/* Pending (Vibrant Rose Red) */
+.spms-status-pending {
+  background: #ffe4e6 !important;
+  color: #e11d48 !important;
+  border: 1px solid #fecdd3 !important;
+}
+
+/* In Progress (Vibrant Amber / Orange) */
+.spms-status-progress {
+  background: #fef3c7 !important;
+  color: #d97706 !important;
+  border: 1px solid #fde68a !important;
+}
+
+/* Completed (Vibrant Emerald Green) */
+.spms-status-completed {
+  background: #dcfce7 !important;
+  color: #16a34a !important;
+  border: 1px solid #bbf7d0 !important;
+}
+
+/* Under Review (Vibrant Indigo / Purple) */
+.spms-status-review {
+  background: #e0e7ff !important;
+  color: #4f46e5 !important;
+  border: 1px solid #c7d2fe !important;
+}
+
+/* Priority Badges */
+.spms-prio-high {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.spms-prio-medium {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+/* Action & Primary Buttons */
+.spms-btn-primary {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3) !important;
+}
+
+.spms-btn-action {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+}
+
+/* FILE SUBMISSION BUTTONS & DROPZONE */
+.spms-btn-upload {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+  padding: 6px 14px !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25) !important;
+  transition: all 0.25s ease-in-out !important;
+}
+
+.spms-btn-upload:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+.spms-btn-view {
+  background-color: #f8fafc !important;
+  border: 1.5px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+  padding: 5px 13px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.spms-btn-view:hover {
+  background-color: #e2e8f0 !important;
+  border-color: #94a3b8 !important;
+  color: #0284c7 !important;
+  transform: translateY(-1px);
+}
+
+.spms-file-picker {
+  border: 2px dashed #818cf8 !important;
+  background-color: #f5f3ff !important;
+  color: #4338ca !important;
+  padding: 16px 14px !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+.spms-file-picker:hover {
+  border-color: #4f46e5 !important;
+  background-color: #ede9fe !important;
+  transform: scale(1.01);
+}
+
+.spms-file-selected {
+  background-color: #ecfdf5 !important;
+  border: 2px solid #10b981 !important;
+  color: #047857 !important;
+}
+
+/* Dialog Titles */
+.spms-dialog-title {
+  font-weight: 800 !important;
+  color: #0f172a;
+}
+
+/* Welcome Back Banner - Blue Gradient Background */
+.spms-banner-hero {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  padding: 28px !important;
+  border-radius: 16px !important;
+  box-shadow: 0 12px 24px -6px rgba(37, 99, 235, 0.4) !important;
+}
+
+/* Ensure inner text remains clearly visible on blue */
+.spms-hero-title {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+.spms-hero-sub {
+  color: #dbeafe !important;
+}
+
+.spms-hero-sub b {
+  color: #ffffff !important;
+}
+/* Logout Button Styling */
+.spms-btn-logout {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2), 0 2px 4px -1px rgba(239, 68, 68, 0.1) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+.spms-btn-logout:hover {
+  background-color: #dc2626 !important;
+  box-shadow: 0 6px 12px -1px rgba(239, 68, 68, 0.3) !important;
+  transform: translateY(-1px);
+}

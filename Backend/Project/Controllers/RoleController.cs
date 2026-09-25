@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.Model;
@@ -10,10 +11,12 @@ namespace WebApplication1.Controllers
     public class RoleController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IValidator<SPM_Role> _validator;
 
-        public RoleController(AppDbContext context)
+        public RoleController(AppDbContext context, IValidator<SPM_Role> validator)
         {
             _context = context;
+            _validator = validator;
         }
 
         // GET ALL
@@ -38,13 +41,21 @@ namespace WebApplication1.Controllers
             return Ok(role);
         }
 
-        // INSERT
+        // INSERT (POST)
         [HttpPost]
         public async Task<IActionResult> AddRole([FromBody] SPM_Role role)
         {
-            if (!ModelState.IsValid)
+            // Validate using FluentValidation
+            var validationResult = await _validator.ValidateAsync(role);
+
+            if (!validationResult.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new
+                {
+                    success = false,
+                    errors = errors
+                });
             }
 
             _context.SPM_Roles.Add(role);
@@ -53,13 +64,26 @@ namespace WebApplication1.Controllers
             return CreatedAtAction(nameof(GetRole), new { id = role.RoleId }, role);
         }
 
-        // UPDATE
+        // UPDATE (PUT)
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRole(int id, [FromBody] SPM_Role role)
         {
             if (id != role.RoleId)
             {
                 return BadRequest(new { message = "RoleId mismatch." });
+            }
+
+            // Validate using FluentValidation
+            var validationResult = await _validator.ValidateAsync(role);
+
+            if (!validationResult.IsValid)
+            {
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new
+                {
+                    success = false,
+                    errors = errors
+                });
             }
 
             var existingRole = await _context.SPM_Roles.FindAsync(id);

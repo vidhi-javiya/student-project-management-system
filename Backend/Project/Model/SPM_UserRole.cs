@@ -11,15 +11,12 @@ namespace WebApplication1.Model
         [Column("RolePermissionId")]
         public int RolePermissionId { get; set; }
 
-        [Required]
         [Column("RoleId")]
         public int RoleId { get; set; }
 
-        [Required]
         [Column("UserId")]
         public int UserId { get; set; }
 
-        
         [ForeignKey(nameof(RoleId))]
         public virtual SPM_Role? Role { get; set; }
 

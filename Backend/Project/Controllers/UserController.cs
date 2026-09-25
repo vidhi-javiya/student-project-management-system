@@ -10,12 +10,12 @@ namespace WebApplication1.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _environment; 
+        private readonly IWebHostEnvironment _environment;
 
         public UserController(AppDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
-            _environment = environment; 
+            _environment = environment;
         }
 
         [HttpGet]
@@ -81,7 +81,7 @@ namespace WebApplication1.Controllers
                     MobileNumber = mobileNumber,
                     IsActive = isActive,
                     ProfilePicturePath = fileName,
-            
+
                 };
 
                 _context.SPM_Users.Add(newUser);

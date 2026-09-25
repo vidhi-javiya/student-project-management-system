@@ -15,13 +15,16 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 const ManageTasks = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [tasks, setTasks] = useState([]);
-  const [statuses, setStatuses] = useState([]); // Dynamic Status list from API
+  const [statuses, setStatuses] = useState([]);
+  const [usersMap, setUsersMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const TASKS_API_URL = "https://localhost:7187/api/Task";
-  const STATUS_API_URL = "https://localhost:7187/api/Status";
+  const BASE_URL = "https://localhost:7187";
+  const TASKS_API_URL = `${BASE_URL}/api/Task`;
+  const STATUS_API_URL = `${BASE_URL}/api/Status`;
+  const USER_API_URL = `${BASE_URL}/api/User`;
 
   // Dropdown Toggle State
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -31,24 +34,53 @@ const ManageTasks = () => {
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  // Fetch Statuses from API (GET)
+  // Fetch Statuses
   const fetchStatuses = async () => {
     try {
       const response = await fetch(STATUS_API_URL);
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: Failed to fetch statuses`);
+      if (response.ok) {
+        const data = await response.json();
+        setStatuses(Array.isArray(data) ? data : data.$values || []);
       }
-      const data = await response.json();
-      setStatuses(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Fetch Status Error:", err);
     }
   };
 
-  // Fetch Tasks from API (GET)
+  // Fetch Users and Create ID-to-Name Map
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(USER_API_URL);
+      if (response.ok) {
+        const data = await response.json();
+        const rawUsers = Array.isArray(data) ? data : data.$values || [];
+
+        const map = {};
+        rawUsers.forEach((u) => {
+          const rawId = u.userID ?? u.UserID ?? u.userId ?? u.UserId ?? u.id ?? u.Id;
+          
+          if (rawId !== undefined && rawId !== null) {
+            const uId = String(rawId).trim();
+            const firstName = u.firstName ?? u.FirstName ?? "";
+            const lastName = u.lastName ?? u.LastName ?? "";
+            const fullName = `${firstName} ${lastName}`.trim();
+            
+            const displayName =
+              fullName || u.userName || u.UserName || u.name || u.Name || `Student #${uId}`;
+
+            map[uId] = displayName;
+          }
+        });
+        setUsersMap(map);
+      }
+    } catch (err) {
+      console.error("Fetch Users Error:", err);
+    }
+  };
+
+  // Fetch Tasks
   const fetchTasks = async () => {
     try {
-      setLoading(true);
       const response = await fetch(TASKS_API_URL);
 
       if (!response.ok) {
@@ -56,25 +88,30 @@ const ManageTasks = () => {
       }
 
       const data = await response.json();
-      const activeTasks = (Array.isArray(data) ? data : []).filter(
-        (task) => !task.isDeleted && !task.IsDeleted
-      );
+      const rawTasks = Array.isArray(data) ? data : data.$values || [];
+      const activeTasks = rawTasks.filter((task) => !task.isDeleted && !task.IsDeleted);
+
       setTasks(activeTasks);
       setError(null);
     } catch (err) {
       console.error("Fetch Tasks Error:", err);
       setError(err.message);
-    } finally {
-      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchStatuses();
-    fetchTasks();
+    const loadInitialData = async () => {
+      setLoading(true);
+      await fetchStatuses();
+      await fetchUsers();
+      await fetchTasks();
+      setLoading(false);
+    };
+
+    loadInitialData();
   }, []);
 
-  // Delete Task via API (DELETE)
+  // Delete Task
   const handleDeleteTask = async (taskId) => {
     if (!window.confirm("Are you sure you want to delete this task?")) {
       return;
@@ -92,16 +129,14 @@ const ManageTasks = () => {
         throw new Error(`Error ${response.status}: Failed to delete task`);
       }
 
-      setTasks((prevTasks) =>
-        prevTasks.filter((t) => (t.taskId ?? t.TaskId) !== taskId)
-      );
+      setTasks((prevTasks) => prevTasks.filter((t) => (t.taskId ?? t.TaskId) !== taskId));
     } catch (err) {
       console.error("Delete Error:", err);
       alert("Failed to delete task. Please try again.");
     }
   };
 
-  // Handle Dynamic Status Change (UI + Backend PUT)
+  // Handle Dynamic Status Change
   const handleStatusChange = async (taskId, selectedStatusObj) => {
     const selectedStatusId =
       selectedStatusObj.statusID ??
@@ -115,13 +150,10 @@ const ManageTasks = () => {
       selectedStatusObj.name ??
       "";
 
-    const targetTask = tasks.find(
-      (t) => (t.taskId ?? t.TaskId) === taskId
-    );
+    const targetTask = tasks.find((t) => (t.taskId ?? t.TaskId) === taskId);
     if (!targetTask) return;
 
-    let updatedProgress =
-      targetTask.progressPercentage ?? targetTask.ProgressPercentage ?? 0;
+    let updatedProgress = targetTask.progressPercentage ?? targetTask.ProgressPercentage ?? 0;
     if (selectedStatusName.toLowerCase() === "pending") updatedProgress = 0;
     if (selectedStatusName.toLowerCase() === "completed") updatedProgress = 100;
 
@@ -150,6 +182,7 @@ const ManageTasks = () => {
       const payload = {
         TaskId: Number(taskId),
         ProjectId: Number(targetTask.projectId ?? targetTask.ProjectId ?? 0),
+        AssignedTo: targetTask.assignedTo ?? targetTask.AssignedTo ? Number(targetTask.assignedTo ?? targetTask.AssignedTo) : null,
         TaskTitle: (targetTask.taskTitle ?? targetTask.TaskTitle ?? "").toString(),
         TaskDescription: targetTask.taskDescription ?? targetTask.TaskDescription ?? null,
         TaskStatus: Number(selectedStatusId),
@@ -176,9 +209,47 @@ const ManageTasks = () => {
       }
     } catch (err) {
       console.error("Status Update Error:", err);
-      fetchTasks(); // Revert back on error
+      fetchTasks();
       alert("Could not update status on server. Reverting changes.");
     }
+  };
+
+  // 💥 મુખ્ય સુધારો: તમારા Backend Response ની exact "assignedStudentName" Key વાંચવી
+  const getAssignedStudentName = (task) => {
+    // 1. Check exact API response key (assignedStudentName)
+    const directName =
+      task.assignedStudentName ??
+      task.AssignedStudentName ??
+      task.assignedToName ??
+      task.AssignedToName ??
+      task.assignedUser ??
+      task.AssignedUser ??
+      task.studentName ??
+      task.StudentName;
+
+    if (directName && typeof directName === "string" && directName.trim() !== "") {
+      return directName;
+    }
+
+    // 2. Check Object structure if present
+    if (typeof task.assignedTo === "object" && task.assignedTo !== null) {
+      const obj = task.assignedTo;
+      const fName = obj.firstName ?? obj.FirstName ?? "";
+      const lName = obj.lastName ?? obj.LastName ?? "";
+      const fullName = `${fName} ${lName}`.trim();
+      if (fullName) return fullName;
+    }
+
+    // 3. Map Lookup Fallback (using assignedTo ID: 13)
+    const rawAssignedId = task.assignedTo ?? task.AssignedTo ?? task.userId ?? task.UserId;
+    if (rawAssignedId !== undefined && rawAssignedId !== null) {
+      const assignedId = String(rawAssignedId).trim();
+      if (usersMap[assignedId]) {
+        return usersMap[assignedId];
+      }
+    }
+
+    return "Unassigned";
   };
 
   // Filter Tasks Array
@@ -187,18 +258,18 @@ const ManageTasks = () => {
     const project = task.projectTitle ?? task.ProjectTitle ?? "";
     const priority = task.priorityName ?? task.PriorityName ?? "";
     const status = task.statusName ?? task.StatusName ?? "";
+    const assignedUser = getAssignedStudentName(task);
 
     const titleMatch = title.toLowerCase().includes(searchTerm.toLowerCase());
     const projectMatch = project.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSearch = titleMatch || projectMatch;
+    const userMatch = assignedUser.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = titleMatch || projectMatch || userMatch;
 
     const matchesPriority =
-      priorityFilter === "All" ||
-      priority.toLowerCase() === priorityFilter.toLowerCase();
+      priorityFilter === "All" || priority.toLowerCase() === priorityFilter.toLowerCase();
 
     const matchesStatus =
-      statusFilter === "All" ||
-      status.toLowerCase() === statusFilter.toLowerCase();
+      statusFilter === "All" || status.toLowerCase() === statusFilter.toLowerCase();
 
     return matchesSearch && matchesPriority && matchesStatus;
   });
@@ -236,7 +307,7 @@ const ManageTasks = () => {
                 <SearchIcon className="search-icon" />
                 <input
                   type="text"
-                  placeholder="Title, project..."
+                  placeholder="Title, project, student..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -256,7 +327,7 @@ const ManageTasks = () => {
               </select>
             </div>
 
-            {/* Dynamic Status Filter loaded from API */}
+            {/* Dynamic Status Filter */}
             <div className="filter-group">
               <label>Status</label>
               <select
@@ -299,6 +370,7 @@ const ManageTasks = () => {
                     <th>ID</th>
                     <th>Task Title</th>
                     <th>Project</th>
+                    <th>Assigned To</th>
                     <th>Priority</th>
                     <th>Status</th>
                     <th>Score</th>
@@ -312,14 +384,14 @@ const ManageTasks = () => {
                 <tbody>
                   {loading ? (
                     <tr>
-                      <td colSpan="11" className="no-data">
+                      <td colSpan="12" className="no-data">
                         Loading tasks...
                       </td>
                     </tr>
                   ) : error ? (
                     <tr>
                       <td
-                        colSpan="11"
+                        colSpan="12"
                         className="no-data"
                         style={{ color: "red" }}
                       >
@@ -333,6 +405,10 @@ const ManageTasks = () => {
                       const taskDesc = task.taskDescription ?? task.TaskDescription ?? "";
                       const projTitle = task.projectTitle ?? task.ProjectTitle ?? "";
                       const projId = task.projectId ?? task.ProjectId;
+                      
+                      // 💥 "bansi" નામ મેળવશે
+                      const assignedToName = getAssignedStudentName(task);
+
                       const priority = task.priorityName ?? task.PriorityName ?? "Low";
                       const status = task.statusName ?? task.StatusName ?? "Pending";
                       const assignedScore = task.assignedScore ?? task.AssignedScore ?? 0;
@@ -342,7 +418,6 @@ const ManageTasks = () => {
                       const dueDate = task.dueDate ?? task.DueDate;
                       const remarks = task.facultyRemarks ?? task.FacultyRemarks;
 
-                      // Date Formatting Helper
                       const formattedStartDate = startDate
                         ? new Date(startDate).toISOString().split("T")[0]
                         : "-";
@@ -362,16 +437,22 @@ const ManageTasks = () => {
                             </div>
                           </td>
                           <td>{projTitle || `Project #${projId}`}</td>
+                          
+                          {/* ASSIGNED TO STUDENT NAME */}
+                          <td>
+                            <span className="assigned-user-badge">
+                              {assignedToName}
+                            </span>
+                          </td>
+
                           <td>
                             <span
-                              className={`priority-badge ${priority
-                                .toLowerCase()}`}
+                              className={`priority-badge ${priority.toLowerCase()}`}
                             >
                               {priority}
                             </span>
                           </td>
                           <td>
-                            {/* Dynamic Status Dropdown */}
                             <div className="status-dropdown-wrapper">
                               <button
                                 type="button"
@@ -442,11 +523,9 @@ const ManageTasks = () => {
                             </div>
                           </td>
 
-                          {/* Start Date & End Date (Due Date) */}
                           <td>{formattedStartDate}</td>
                           <td>{formattedDueDate}</td>
 
-                          {/* Faculty Remarks */}
                           <td>
                             <span className="faculty-remarks">
                               {remarks || "-"}
@@ -456,7 +535,7 @@ const ManageTasks = () => {
                           <td>
                             <div className="action-buttons">
                               <Link
-                                to={`/admin/tasks/edit/${taskId}`}
+                                to={`/admin/tasks/add?id=${taskId}`}
                                 className="icon-btn edit-btn"
                                 title="Edit Task"
                               >
@@ -478,7 +557,7 @@ const ManageTasks = () => {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="11" className="no-data">
+                      <td colSpan="12" className="no-data">
                         No Tasks Found!
                       </td>
                     </tr>

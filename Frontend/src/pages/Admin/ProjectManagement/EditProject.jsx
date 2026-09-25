@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import "./AddProject.css"; // AddProject.css નો જ ઉપયોગ કરી શકાશે
+import "./AddProject.css"; // AddProject.css નો જ ઉપયોગ કરે છે
 
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import Navbar from "../../../components/Navbar/Navbar";
@@ -39,7 +39,7 @@ const EditProject = () => {
     facultyId: "",
     studentId: "",
     totalTasks: 0,
-    completedTasks: 0
+    completedTasks: 0,
   });
 
   // 1. Fetch Statuses
@@ -64,7 +64,7 @@ const EditProject = () => {
     fetchStatuses();
   }, []);
 
-  // 2. Fetch Users & Roles Logic
+  // 2. Fetch Users & Precise Role Filtering (Fixed Logic)
   useEffect(() => {
     const fetchUsersAndRoles = async () => {
       try {
@@ -73,7 +73,7 @@ const EditProject = () => {
         const [usersRes, rolesRes, userRolesRes] = await Promise.all([
           fetch(API_USER),
           fetch(API_ROLE).catch(() => null),
-          fetch(API_USER_ROLE).catch(() => null)
+          fetch(API_USER_ROLE).catch(() => null),
         ]);
 
         if (!usersRes.ok) throw new Error("Failed to fetch users");
@@ -86,17 +86,17 @@ const EditProject = () => {
         const rawRoles = Array.isArray(rolesData) ? rolesData : rolesData.$values || [];
         const rawUserRoles = Array.isArray(userRolesData) ? userRolesData : userRolesData.$values || [];
 
-        // Role Mapping
+        // Step A: Role ID -> Role Name Dictionary
         const roleDict = {};
         rawRoles.forEach((r) => {
           const rId = String(r.roleId || r.RoleId || "");
-          const rName = r.roleName || r.RoleName || "";
-          if (rId && rName) {
-            roleDict[rId] = rName.toLowerCase();
+          const rName = (r.roleName || r.RoleName || "").toLowerCase();
+          if (rId) {
+            roleDict[rId] = rName;
           }
         });
 
-        // User Role Mapping
+        // Step B: User ID -> Role Name Mapping
         const userRoleMap = {};
         rawUserRoles.forEach((ur) => {
           const uId = String(ur.userId || ur.UserId || "");
@@ -106,28 +106,38 @@ const EditProject = () => {
           }
         });
 
+        // LocalStorage Fallback Safety
+        const localSavedMap = JSON.parse(localStorage.getItem("spm_user_role_map") || "{}");
+
         const faculties = [];
         const students = [];
-        const allUsers = [];
 
         rawUsers.forEach((u) => {
           const uId = u.userId || u.UserId || u.id;
           const uName = u.fullName || u.FullName || u.userName || u.UserName || `User ${uId}`;
-          const userRole = (userRoleMap[String(uId)] || "").toLowerCase();
-
           const formattedUser = { id: parseInt(uId), name: uName };
-          allUsers.push(formattedUser);
 
-          if (userRole.includes("faculty") || userRole.includes("teacher") || userRole.includes("guide")) {
+          // Direct Role ID attached with User Object or Junction Mapping
+          const directRoleId = String(u.roleId || u.RoleId || localSavedMap[uId] || "");
+          let roleName = (roleDict[directRoleId] || userRoleMap[String(uId)] || "").toLowerCase();
+
+          const isFaculty =
+            roleName.includes("faculty") ||
+            roleName.includes("teacher") ||
+            roleName.includes("guide") ||
+            roleName.includes("professor");
+
+          const isStudent = roleName.includes("student");
+
+          if (isFaculty) {
             faculties.push(formattedUser);
-          } else if (userRole.includes("student")) {
+          } else if (isStudent) {
             students.push(formattedUser);
           }
         });
 
-        setFacultyList(faculties.length > 0 ? faculties : allUsers);
-        setStudentList(students.length > 0 ? students : allUsers);
-
+        setFacultyList(faculties);
+        setStudentList(students);
       } catch (err) {
         console.error("Error fetching user data:", err);
       } finally {
@@ -150,7 +160,7 @@ const EditProject = () => {
 
         const data = await res.json();
 
-        // ISO Date (2026-08-10T00:00:00) ને HTML Date input (YYYY-MM-DD) માં બદલવા માટે
+        // ISO Date (2026-08-10T00:00:00) -> HTML Date input (YYYY-MM-DD)
         const formatDate = (dateStr) => {
           if (!dateStr) return "";
           return dateStr.split("T")[0];
@@ -165,7 +175,7 @@ const EditProject = () => {
           facultyId: data.facultyId || data.FacultyId || "",
           studentId: data.studentId || data.StudentId || "",
           totalTasks: data.totalTasks ?? data.TotalTasks ?? 0,
-          completedTasks: data.completedTasks ?? data.CompletedTasks ?? 0
+          completedTasks: data.completedTasks ?? data.CompletedTasks ?? 0,
         });
       } catch (err) {
         console.error("Error fetching project:", err);
@@ -208,15 +218,15 @@ const EditProject = () => {
         facultyId: parseInt(formData.facultyId),
         studentId: parseInt(formData.studentId),
         totalTasks: total,
-        completedTasks: completed
+        completedTasks: completed,
       };
 
       const res = await fetch(`${API_PROJECT}/${id}`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
@@ -224,7 +234,7 @@ const EditProject = () => {
         navigate("/admin/projects");
       } else {
         const errText = await res.text();
-        
+
         if (errText.includes("already exists") || res.status === 400 || res.status === 409) {
           alert("આ શીર્ષક (Project Title) વાળો પ્રોજેક્ટ પહેલાથી જ અસ્તિત્વમાં છે. કૃપા કરીને બીજું નામ લખો.");
         } else {
@@ -240,9 +250,10 @@ const EditProject = () => {
   };
 
   // Real-time Progress Calculated for UI Preview
-  const previewProgress = formData.totalTasks > 0
-    ? Math.round((formData.completedTasks / formData.totalTasks) * 100)
-    : 0;
+  const previewProgress =
+    formData.totalTasks > 0
+      ? Math.round((formData.completedTasks / formData.totalTasks) * 100)
+      : 0;
 
   if (loadingProject) {
     return (
@@ -428,13 +439,21 @@ const EditProject = () => {
               {/* Progress Bar Preview */}
               <div className="form-row single-col" style={{ marginTop: "5px" }}>
                 <label>Progress Preview ({previewProgress}%)</label>
-                <div style={{ width: "100%", backgroundColor: "#e0e0e0", height: "10px", borderRadius: "5px", overflow: "hidden" }}>
+                <div
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#e0e0e0",
+                    height: "10px",
+                    borderRadius: "5px",
+                    overflow: "hidden",
+                  }}
+                >
                   <div
                     style={{
                       width: `${previewProgress > 100 ? 100 : previewProgress}%`,
                       backgroundColor: previewProgress === 100 ? "#4caf50" : "#2196f3",
                       height: "100%",
-                      transition: "width 0.3s ease"
+                      transition: "width 0.3s ease",
                     }}
                   ></div>
                 </div>

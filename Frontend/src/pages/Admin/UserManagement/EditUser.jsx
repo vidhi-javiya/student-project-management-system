@@ -50,17 +50,19 @@ const EditUser = () => {
         const userData = await userRes.json();
 
         // Fetch Existing Role Mapping for this User
-        let existingRoleId = "";
-        try {
-          const userRoleRes = await fetch(`${API_USER_ROLE}/user/${id}`);
-          if (userRoleRes.ok) {
-            const urData = await userRoleRes.json();
-            existingRoleId = urData.roleId || urData.RoleId || "";
+        let existingRoleId = userData.roleId || userData.RoleId || "";
+        if (!existingRoleId) {
+          try {
+            const userRoleRes = await fetch(`${API_USER_ROLE}/user/${id}`);
+            if (userRoleRes.ok) {
+              const urData = await userRoleRes.json();
+              existingRoleId = urData.roleId || urData.RoleId || "";
+            }
+          } catch {
+            // Fallback to local storage mapping
+            const localSavedMap = JSON.parse(localStorage.getItem("spm_user_role_map") || "{}");
+            existingRoleId = localSavedMap[id] || "";
           }
-        } catch {
-          // Fallback to local storage mapping if API endpoint is missing
-          const localSavedMap = JSON.parse(localStorage.getItem("spm_user_role_map") || "{}");
-          existingRoleId = localSavedMap[id] || "";
         }
 
         setUser({
@@ -69,7 +71,7 @@ const EditUser = () => {
           email: userData.email || userData.Email || "",
           password: "",
           mobileNumber: userData.mobileNumber || userData.MobileNumber || "",
-          roleId: existingRoleId,
+          roleId: existingRoleId ? String(existingRoleId) : "",
           isActive: userData.isActive !== undefined ? userData.isActive : (userData.IsActive ?? true),
         });
 
@@ -91,10 +93,10 @@ const EditUser = () => {
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
-    setUser({
-      ...user,
+    setUser((prev) => ({
+      ...prev,
       [name]: type === "select-one" && name === "isActive" ? value === "true" : value,
-    });
+    }));
   };
 
   const handleFileChange = (e) => {
@@ -117,19 +119,26 @@ const EditUser = () => {
     setSubmitting(true);
 
     try {
-      // 1. Update SPM_User Data
+      // 1. Prepare FormData for User Update
       const formData = new FormData();
       formData.append("userId", user.userId);
       formData.append("fullName", user.fullName);
       formData.append("email", user.email);
-      if (user.password) formData.append("password", user.password);
       formData.append("mobileNumber", user.mobileNumber);
       formData.append("isActive", user.isActive);
+      
+      // 👈 Key Fix: Append roleId in FormData
+      formData.append("roleId", parseInt(user.roleId));
+
+      if (user.password) {
+        formData.append("password", user.password);
+      }
 
       if (selectedFile) {
         formData.append("profilePicture", selectedFile);
       }
 
+      // Update SPM_User Data via PUT
       const userResponse = await fetch(`${API_USER}/${id}`, {
         method: "PUT",
         body: formData,
@@ -140,7 +149,7 @@ const EditUser = () => {
         throw new Error(errorText || "Failed to update user.");
       }
 
-      // 2. Post/Put to SPM_UserRole Junction Table
+      // 2. Separate Role Mapping Call (If backend requires mapping table sync)
       try {
         await fetch(API_USER_ROLE, {
           method: "POST",
@@ -154,14 +163,15 @@ const EditUser = () => {
         console.warn("UserRole API execution warning:", urErr);
       }
 
-      // 3. Save to Local Mapping Cache for display safety
+      // 3. Update LocalStorage Backup Map
       const localSavedMap = JSON.parse(localStorage.getItem("spm_user_role_map") || "{}");
-      localSavedMap[id] = user.roleId;
+      localSavedMap[id] = parseInt(user.roleId);
       localStorage.setItem("spm_user_role_map", JSON.stringify(localSavedMap));
 
       alert("User and Role Updated Successfully!");
       navigate("/admin/users");
     } catch (err) {
+      console.error("Update Error:", err);
       setErrorMsg(err.message || "An error occurred while updating user.");
     } finally {
       setSubmitting(false);

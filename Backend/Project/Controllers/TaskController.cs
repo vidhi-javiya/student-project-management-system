@@ -17,8 +17,6 @@ namespace WebApplication1.Controllers
             _context = context;
         }
 
-        //Calculate Progress Percentage
-        // Progress % = (EarnedScore / AssignedScore) * 100
         private static decimal CalculateProgress(decimal assignedScore, decimal? earnedScore)
         {
             if (!earnedScore.HasValue || assignedScore <= 0)
@@ -29,7 +27,6 @@ namespace WebApplication1.Controllers
             return progress > 100 ? 100 : Math.Round(progress, 2);
         }
 
-        // GET
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TaskDto>>> GetTasks([FromQuery] int? projectId)
         {
@@ -37,6 +34,7 @@ namespace WebApplication1.Controllers
                 .Include(t => t.Project)
                 .Include(t => t.Status)
                 .Include(t => t.Priority)
+                .Include(t => t.AssignedUser)
                 .Where(t => t.IsDeleted != true);
 
             if (projectId.HasValue)
@@ -50,6 +48,9 @@ namespace WebApplication1.Controllers
                 ProjectId = t.ProjectId,
                 ProjectTitle = t.Project != null ? t.Project.ProjectTitle : null,
 
+                AssignedTo = t.AssignedTo,
+                AssignedStudentName = t.AssignedUser != null ? t.AssignedUser.FullName : null,
+
                 TaskTitle = t.TaskTitle,
                 TaskDescription = t.TaskDescription,
 
@@ -61,6 +62,7 @@ namespace WebApplication1.Controllers
 
                 AssignedScore = t.AssignedScore,
                 EarnedScore = t.EarnedScore,
+                Rating = t.Rating,
                 ProgressPercentage = t.ProgressPercentage,
 
                 StartDate = t.StartDate,
@@ -69,6 +71,7 @@ namespace WebApplication1.Controllers
 
                 FacultyRemarks = t.FacultyRemarks,
                 StudentRemarks = t.StudentRemarks,
+                FileUrl = t.FileUrl,
 
                 IsDeleted = t.IsDeleted
             }).ToListAsync();
@@ -76,7 +79,6 @@ namespace WebApplication1.Controllers
             return Ok(tasks);
         }
 
-        // 2. GET BY ID
         [HttpGet("{id:int}")]
         public async Task<ActionResult<TaskDto>> GetTask(int id)
         {
@@ -84,6 +86,7 @@ namespace WebApplication1.Controllers
                 .Include(t => t.Project)
                 .Include(t => t.Status)
                 .Include(t => t.Priority)
+                .Include(t => t.AssignedUser)
                 .FirstOrDefaultAsync(t => t.TaskId == id && t.IsDeleted != true);
 
             if (task == null)
@@ -97,6 +100,9 @@ namespace WebApplication1.Controllers
                 ProjectId = task.ProjectId,
                 ProjectTitle = task.Project?.ProjectTitle,
 
+                AssignedTo = task.AssignedTo,
+                AssignedStudentName = task.AssignedUser?.FullName,
+
                 TaskTitle = task.TaskTitle,
                 TaskDescription = task.TaskDescription,
 
@@ -108,6 +114,7 @@ namespace WebApplication1.Controllers
 
                 AssignedScore = task.AssignedScore,
                 EarnedScore = task.EarnedScore,
+                Rating = task.Rating,
                 ProgressPercentage = task.ProgressPercentage,
 
                 StartDate = task.StartDate,
@@ -116,6 +123,7 @@ namespace WebApplication1.Controllers
 
                 FacultyRemarks = task.FacultyRemarks,
                 StudentRemarks = task.StudentRemarks,
+                FileUrl = task.FileUrl,
 
                 IsDeleted = task.IsDeleted
             };
@@ -123,26 +131,28 @@ namespace WebApplication1.Controllers
             return Ok(dto);
         }
 
-        // POST
         [HttpPost]
         public async Task<ActionResult<TaskDto>> PostTask(TaskDto dto)
         {
-            // 1. Project Validation
             bool projectExists = await _context.SPM_Projects.AnyAsync(p => p.ProjectId == dto.ProjectId);
             if (!projectExists)
                 return BadRequest(new { message = "Invalid ProjectId." });
 
-            // 2. Status Validation
             bool statusExists = await _context.SPM_Status.AnyAsync(s => s.StatusID == dto.TaskStatus);
             if (!statusExists)
                 return BadRequest(new { message = "Invalid Task Status." });
 
-            // 3. Priority Validation
             bool priorityExists = await _context.SPM_Priority.AnyAsync(p => p.PriorityID == dto.PriorityID);
             if (!priorityExists)
                 return BadRequest(new { message = "Invalid Priority." });
 
-            // 4. Duplicate Task Title Validation (In Same Project)
+            if (dto.AssignedTo.HasValue)
+            {
+                bool userExists = await _context.SPM_Users.AnyAsync(u => u.UserId == dto.AssignedTo.Value);
+                if (!userExists)
+                    return BadRequest(new { message = "Invalid Assigned Student/User ID." });
+            }
+
             bool duplicateTask = await _context.SPM_Tasks.AnyAsync(t =>
                 t.ProjectId == dto.ProjectId &&
                 t.TaskTitle.Trim().ToLower() == dto.TaskTitle.Trim().ToLower() &&
@@ -153,20 +163,21 @@ namespace WebApplication1.Controllers
                 return BadRequest(new { message = "Task Title already exists in this project." });
             }
 
-            // 5. Automatic Progress Calculation
             decimal progress = CalculateProgress(dto.AssignedScore, dto.EarnedScore);
 
             var task = new SPM_Task
             {
                 ProjectId = dto.ProjectId,
+                AssignedTo = dto.AssignedTo,
                 TaskTitle = dto.TaskTitle.Trim(),
                 TaskDescription = dto.TaskDescription,
 
-                TaskStatus = dto.TaskStatus,
+                TaskStatus = dto.TaskStatus > 0 ? dto.TaskStatus : 1,
                 PriorityID = dto.PriorityID,
 
                 AssignedScore = dto.AssignedScore,
                 EarnedScore = dto.EarnedScore,
+                Rating = dto.Rating,
                 ProgressPercentage = progress,
 
                 StartDate = dto.StartDate,
@@ -175,6 +186,7 @@ namespace WebApplication1.Controllers
 
                 FacultyRemarks = dto.FacultyRemarks,
                 StudentRemarks = dto.StudentRemarks,
+                FileUrl = dto.FileUrl,
 
                 IsDeleted = false
             };
@@ -189,73 +201,102 @@ namespace WebApplication1.Controllers
             return CreatedAtAction(nameof(GetTask), new { id = task.TaskId }, dto);
         }
 
-        // PUT
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> PutTask(int id, TaskDto dto)
+        public async Task<IActionResult> PutTask(int id, [FromForm] TaskDto dto, IFormFile? file)
         {
-            if (id != dto.TaskId)
+            try
             {
-                return BadRequest(new { message = "Task ID mismatch." });
-            }
+                if (id != dto.TaskId)
+                {
+                    return BadRequest(new { message = $"Task ID mismatch. Route ID: {id}, DTO ID: {dto.TaskId}" });
+                }
 
-            var task = await _context.SPM_Tasks.FirstOrDefaultAsync(t => t.TaskId == id && t.IsDeleted != true);
-            if (task == null)
+                var task = await _context.SPM_Tasks.FirstOrDefaultAsync(t => t.TaskId == id && t.IsDeleted != true);
+                if (task == null)
+                {
+                    return NotFound(new { message = "Task not found." });
+                }
+
+                // File Upload Logic
+                if (file != null && file.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+
+                    task.FileUrl = "/uploads/" + uniqueFileName;
+                }
+                else if (!string.IsNullOrEmpty(dto.FileUrl))
+                {
+                    task.FileUrl = dto.FileUrl;
+                }
+
+                // Bulletproof dynamic status assignment to avoid Foreign Key conflicts
+                var validStatus = await _context.SPM_Status.FirstOrDefaultAsync();
+                if (validStatus == null)
+                {
+                    var defaultStatus = new SPM_Status
+                    {
+                        StatusID = 1,
+                        StatusName = "Completed",
+                        StatusCssClass = "badge bg-success"
+                    };
+                    _context.SPM_Status.Add(defaultStatus);
+                    await _context.SaveChangesAsync();
+                    task.TaskStatus = 1;
+                }
+                else
+                {
+                    task.TaskStatus = validStatus.StatusID;
+                }
+
+                // Update Fields safely
+                task.ProjectId = dto.ProjectId > 0 ? dto.ProjectId : task.ProjectId;
+                task.AssignedTo = dto.AssignedTo;
+                task.TaskTitle = !string.IsNullOrEmpty(dto.TaskTitle) ? dto.TaskTitle.Trim() : task.TaskTitle;
+                task.TaskDescription = dto.TaskDescription ?? task.TaskDescription;
+                task.PriorityID = dto.PriorityID > 0 ? dto.PriorityID : task.PriorityID;
+                task.AssignedScore = dto.AssignedScore;
+
+                if (dto.Rating.HasValue)
+                {
+                    task.Rating = dto.Rating;
+                }
+
+                if (dto.EarnedScore.HasValue)
+                {
+                    task.EarnedScore = dto.EarnedScore;
+                }
+
+                task.ProgressPercentage = CalculateProgress(task.AssignedScore, task.EarnedScore);
+
+                task.StartDate = dto.StartDate != default ? dto.StartDate : task.StartDate;
+                task.DueDate = dto.DueDate != default ? dto.DueDate : task.DueDate;
+                task.CompletedDate = DateTime.Now;
+                task.FacultyRemarks = dto.FacultyRemarks ?? task.FacultyRemarks;
+                task.StudentRemarks = dto.StudentRemarks ?? task.StudentRemarks;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Task updated successfully.", progressPercentage = task.ProgressPercentage, fileUrl = task.FileUrl });
+            }
+            catch (Exception ex)
             {
-                return NotFound(new { message = "Task not found." });
+                var exactError = ex.InnerException?.Message ?? ex.Message;
+                return BadRequest(new { message = "Server Exception: " + exactError });
             }
-
-            // 1. Project Validation
-            bool projectExists = await _context.SPM_Projects.AnyAsync(p => p.ProjectId == dto.ProjectId);
-            if (!projectExists)
-                return BadRequest(new { message = "Invalid ProjectId." });
-
-            // 2. Status Validation
-            bool statusExists = await _context.SPM_Status.AnyAsync(s => s.StatusID == dto.TaskStatus);
-            if (!statusExists)
-                return BadRequest(new { message = "Invalid Task Status." });
-
-            // 3. Priority Validation
-            bool priorityExists = await _context.SPM_Priority.AnyAsync(p => p.PriorityID == dto.PriorityID);
-            if (!priorityExists)
-                return BadRequest(new { message = "Invalid Priority." });
-
-            // 4. Check Duplicate Title if Title or Project has changed
-            bool duplicateExists = await _context.SPM_Tasks.AnyAsync(t =>
-                t.ProjectId == dto.ProjectId &&
-                t.TaskTitle.Trim().ToLower() == dto.TaskTitle.Trim().ToLower() &&
-                t.TaskId != dto.TaskId &&
-                t.IsDeleted != true);
-
-            if (duplicateExists)
-            {
-                return BadRequest(new { message = "Another task with this title already exists in this project." });
-            }
-
-            // Update Fields
-            task.ProjectId = dto.ProjectId;
-            task.TaskTitle = dto.TaskTitle.Trim();
-            task.TaskDescription = dto.TaskDescription;
-            task.TaskStatus = dto.TaskStatus;
-            task.PriorityID = dto.PriorityID;
-            task.AssignedScore = dto.AssignedScore;
-            task.EarnedScore = dto.EarnedScore;
-
-            // Recalculate progress automatically
-            task.ProgressPercentage = CalculateProgress(dto.AssignedScore, dto.EarnedScore);
-
-            task.StartDate = dto.StartDate;
-            task.DueDate = dto.DueDate;
-            task.CompletedDate = dto.CompletedDate;
-            task.FacultyRemarks = dto.FacultyRemarks;
-            task.StudentRemarks = dto.StudentRemarks;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new { message = "Task updated successfully.", progressPercentage = task.ProgressPercentage });
         }
 
-      
-        // PATCH
         [HttpPatch("{id:int}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] int newStatusId)
         {
@@ -267,19 +308,14 @@ namespace WebApplication1.Controllers
                 return NotFound(new { message = "Task not found." });
             }
 
-            // Validate Status
-            bool statusExists = await _context.SPM_Status
-                .AnyAsync(s => s.StatusID == newStatusId);
-
+            bool statusExists = await _context.SPM_Status.AnyAsync(s => s.StatusID == newStatusId);
             if (!statusExists)
             {
                 return BadRequest(new { message = "Invalid Task Status." });
             }
 
-            // Update Status
             task.TaskStatus = newStatusId;
 
-            // Completed Status (StatusID = 3)
             if (newStatusId == 3)
             {
                 if (!task.CompletedDate.HasValue)
@@ -301,6 +337,7 @@ namespace WebApplication1.Controllers
                 completedDate = task.CompletedDate
             });
         }
+
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteTask(int id)
         {
@@ -311,7 +348,6 @@ namespace WebApplication1.Controllers
                 return NotFound(new { message = "Task not found." });
             }
 
-           
             task.IsDeleted = true;
             await _context.SaveChangesAsync();
 

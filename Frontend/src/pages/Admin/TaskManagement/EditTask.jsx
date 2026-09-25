@@ -21,12 +21,14 @@ const EditTask = () => {
   const [statuses, setStatuses] = useState([]);
   const [projects, setProjects] = useState([]);
   const [priorities, setPriorities] = useState([]);
+  const [students, setStudents] = useState([]); // <-- 1. Students State
 
   // API Endpoints
   const TASKS_API_URL = "https://localhost:7187/api/Task";
   const STATUS_API_URL = "https://localhost:7187/api/Status";
   const PROJECT_API_URL = "https://localhost:7187/api/Project";
   const PRIORITY_API_URL = "https://localhost:7187/api/Priority";
+  const STUDENTS_API_URL = "https://localhost:7187/api/User"; // <-- 2. Student/User API endpoint મુજબ બદલો
 
   // Form State
   const [formData, setFormData] = useState({
@@ -36,6 +38,7 @@ const EditTask = () => {
     taskDescription: "",
     taskStatus: "",
     priorityID: "",
+    assignedTo: "", // <-- 3. Assigned Student ID Field
     assignedScore: "",
     earnedScore: "",
     progressPercentage: 0,
@@ -60,7 +63,7 @@ const EditTask = () => {
     }
   };
 
-  // 2. Fetch Statuses List (StatusManagement API)
+  // 2. Fetch Statuses List
   const fetchStatuses = async () => {
     try {
       const response = await fetch(STATUS_API_URL);
@@ -86,7 +89,20 @@ const EditTask = () => {
     }
   };
 
-  // 4. Fetch Single Task Detail & Bind Data
+  // 4. Fetch Students / Users List
+  const fetchStudents = async () => {
+    try {
+      const response = await fetch(STUDENTS_API_URL);
+      if (response.ok) {
+        const data = await response.json();
+        setStudents(Array.isArray(data) ? data : []);
+      }
+    } catch (err) {
+      console.error("Fetch Students Error:", err);
+    }
+  };
+
+  // 5. Fetch Single Task Detail & Bind Data
   const fetchTaskById = async () => {
     try {
       setLoading(true);
@@ -98,7 +114,7 @@ const EditTask = () => {
 
       const taskData = await response.json();
 
-      // Format ISO Date string to YYYY-MM-DD for <input type="date">
+      // Format ISO Date string to YYYY-MM-DD
       const formattedStartDate = taskData.startDate || taskData.StartDate
         ? new Date(taskData.startDate || taskData.StartDate).toISOString().split("T")[0]
         : "";
@@ -106,7 +122,6 @@ const EditTask = () => {
         ? new Date(taskData.dueDate || taskData.DueDate).toISOString().split("T")[0]
         : "";
 
-      // Safe key selection across all backend property-case variations
       const selectedStatus =
         taskData.taskStatus ??
         taskData.TaskStatus ??
@@ -125,6 +140,15 @@ const EditTask = () => {
         taskData.projectId ??
         taskData.ProjectId;
 
+      // Safe check for Assigned Student/User ID
+      const selectedAssignedTo =
+        taskData.assignedTo ??
+        taskData.AssignedTo ??
+        taskData.studentId ??
+        taskData.StudentId ??
+        taskData.userId ??
+        taskData.UserId;
+
       setFormData({
         taskId: Number(id),
         projectId: selectedProject !== undefined && selectedProject !== null ? String(selectedProject) : "",
@@ -132,6 +156,7 @@ const EditTask = () => {
         taskDescription: taskData.taskDescription || taskData.TaskDescription || "",
         taskStatus: selectedStatus !== undefined && selectedStatus !== null ? String(selectedStatus) : "",
         priorityID: selectedPriority !== undefined && selectedPriority !== null ? String(selectedPriority) : "",
+        assignedTo: selectedAssignedTo !== undefined && selectedAssignedTo !== null ? String(selectedAssignedTo) : "", // Bound value
         assignedScore: (taskData.assignedScore ?? taskData.AssignedScore) ?? "",
         earnedScore: (taskData.earnedScore ?? taskData.EarnedScore) ?? "",
         progressPercentage: Number(taskData.progressPercentage ?? taskData.ProgressPercentage) || 0,
@@ -152,9 +177,9 @@ const EditTask = () => {
   // Run on component load
   useEffect(() => {
     const loadAllData = async () => {
-      // Step A: Load Dropdown Options First
-      await Promise.all([fetchProjects(), fetchStatuses(), fetchPriorities()]);
-      // Step B: Load Task Detail So Selection Matches Dropdown Options
+      // Step A: Load Dropdown Options First (including Students)
+      await Promise.all([fetchProjects(), fetchStatuses(), fetchPriorities(), fetchStudents()]);
+      // Step B: Load Task Detail
       await fetchTaskById();
     };
     loadAllData();
@@ -195,6 +220,7 @@ const EditTask = () => {
         TaskDescription: formData.taskDescription || null,
         TaskStatus: formData.taskStatus !== "" ? Number(formData.taskStatus) : 0,
         PriorityID: formData.priorityID !== "" ? Number(formData.priorityID) : 0,
+        AssignedTo: formData.assignedTo !== "" ? Number(formData.assignedTo) : null, // Send Assigned Student ID
         AssignedScore: formData.assignedScore !== "" ? Number(parseFloat(formData.assignedScore)) : 0,
         EarnedScore: formData.earnedScore !== "" ? Number(parseFloat(formData.earnedScore)) : null,
         ProgressPercentage: Number(formData.progressPercentage) || 0,
@@ -217,7 +243,6 @@ const EditTask = () => {
         throw new Error(`Server Error (${response.status}): ${errorText}`);
       }
 
-      // Success Alert in English
       alert(`Task #${id} has been updated successfully!`);
       navigate("/admin/tasks");
     } catch (err) {
@@ -236,15 +261,12 @@ const EditTask = () => {
 
   return (
     <div className="dashboard-layout">
-      {/* Sidebar Section */}
       <Sidebar open={sidebarOpen} />
 
-      {/* Main Content Area */}
       <div className="main-content">
         <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         <div className="page-content">
-          {/* Breadcrumb Navigation */}
           <div className="breadcrumb">
             <Link to="/AdminDashboard">Home</Link> /{" "}
             <Link to="/admin/tasks">Tasks</Link> / <span>Edit Task #{id}</span>
@@ -296,8 +318,8 @@ const EditTask = () => {
                 </div>
               </div>
 
-              {/* Row 2: Status & Priority Dropdowns */}
-              <div className="form-row two-col">
+              {/* Row 2: Status, Priority & Assigned Student Dropdowns */}
+              <div className="form-row three-col">
                 <div className="form-group">
                   <label htmlFor="taskStatus">Status</label>
                   <select
@@ -334,6 +356,28 @@ const EditTask = () => {
                       return (
                         <option key={prId} value={String(prId)}>
                           {prName}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+
+                {/* NEW: Assigned Student Field */}
+                <div className="form-group">
+                  <label htmlFor="assignedTo">Assign To Student</label>
+                  <select
+                    id="assignedTo"
+                    name="assignedTo"
+                    value={String(formData.assignedTo)}
+                    onChange={handleChange}
+                  >
+                    <option value="">-- Select Student --</option>
+                    {students.map((st) => {
+                      const sId = st.userId ?? st.UserId ?? st.studentId ?? st.StudentId ?? st.id;
+                      const sName = st.fullName ?? st.FullName ?? st.userName ?? st.UserName ?? st.name;
+                      return (
+                        <option key={sId} value={String(sId)}>
+                          {sName}
                         </option>
                       );
                     })}
@@ -458,7 +502,6 @@ const EditTask = () => {
           </div>
         </div>
 
-        {/* Footer Section */}
         <Footer />
       </div>
     </div>

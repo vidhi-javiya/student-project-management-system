@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Sidebar from "../../../components/Sidebar/Sidebar";
 import Navbar from "../../../components/Navbar/Navbar";
 import Footer from "../../../components/Footer/Footer";
@@ -11,15 +11,19 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CloseIcon from "@mui/icons-material/Close";
 
-const TASK_API_URL = "https://localhost:7187/api/Task";
-const PROJECT_API_URL = "https://localhost:7187/api/Project";
-const STATUS_API_URL = "https://localhost:7187/api/Status";
-const PRIORITY_API_URL = "https://localhost:7187/api/Priority";
+const BASE_URL = "https://localhost:7187";
+const TASK_API_URL = `${BASE_URL}/api/Task`;
+const PROJECT_API_URL = `${BASE_URL}/api/Project`;
+const STATUS_API_URL = `${BASE_URL}/api/Status`;
+const PRIORITY_API_URL = `${BASE_URL}/api/Priority`;
+const USER_API_URL = `${BASE_URL}/api/User`;
+const ROLE_API_URL = `${BASE_URL}/api/Role`;
+const USER_ROLE_API_URL = `${BASE_URL}/api/UserRole`;
 
 const AddTask = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const editTaskId = searchParams.get("id"); // URL મા થી edit માટે ID મળશે (દા.ત. /admin/add-task?id=5)
+  const editTaskId = searchParams.get("id");
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -27,12 +31,14 @@ const AddTask = () => {
   const [projectOptions, setProjectOptions] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
   const [priorityOptions, setPriorityOptions] = useState([]);
+  const [studentOptions, setStudentOptions] = useState([]);
   const [loadingDropdowns, setLoadingDropdowns] = useState(true);
 
   // Form Field State
   const [formData, setFormData] = useState({
     taskId: 0,
     projectId: "",
+    assignedTo: "",
     taskTitle: "",
     taskDescription: "",
     taskStatus: "",
@@ -51,30 +57,102 @@ const AddTask = () => {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Load Dropdown Options and Edit Task Data if editTaskId exists
+  // Fetch Dropdown Data (Projects, Status, Priority, and STRICTLY ONLY Students)
   useEffect(() => {
     const fetchDropdownData = async () => {
       try {
         setLoadingDropdowns(true);
-        const [projRes, statusRes, priorityRes] = await Promise.all([
-          fetch(PROJECT_API_URL),
-          fetch(STATUS_API_URL),
-          fetch(PRIORITY_API_URL),
+        const [projRes, statusRes, priorityRes, userRes, roleRes, userRoleRes] = await Promise.all([
+          fetch(PROJECT_API_URL).catch(() => null),
+          fetch(STATUS_API_URL).catch(() => null),
+          fetch(PRIORITY_API_URL).catch(() => null),
+          fetch(USER_API_URL).catch(() => null),
+          fetch(ROLE_API_URL).catch(() => null),
+          fetch(USER_ROLE_API_URL).catch(() => null),
         ]);
 
-        if (projRes.ok) {
+        if (projRes && projRes.ok) {
           const projData = await projRes.json();
-          setProjectOptions(Array.isArray(projData) ? projData : []);
+          setProjectOptions(Array.isArray(projData) ? projData : projData.$values || []);
         }
 
-        if (statusRes.ok) {
+        if (statusRes && statusRes.ok) {
           const statusData = await statusRes.json();
-          setStatusOptions(Array.isArray(statusData) ? statusData : []);
+          setStatusOptions(Array.isArray(statusData) ? statusData : statusData.$values || []);
         }
 
-        if (priorityRes.ok) {
+        if (priorityRes && priorityRes.ok) {
           const priorityData = await priorityRes.json();
-          setPriorityOptions(Array.isArray(priorityData) ? priorityData : []);
+          setPriorityOptions(Array.isArray(priorityData) ? priorityData : priorityData.$values || []);
+        }
+
+        // Strictly Filter Student Users Only
+        if (userRes && userRes.ok) {
+          const userData = await userRes.json();
+          const rolesData = roleRes && roleRes.ok ? await roleRes.json() : [];
+          const userRolesData = userRoleRes && userRoleRes.ok ? await userRoleRes.json() : [];
+
+          const rawUsers = Array.isArray(userData) ? userData : userData.$values || [];
+          const rawRoles = Array.isArray(rolesData) ? rolesData : rolesData.$values || [];
+          const rawUserRoles = Array.isArray(userRolesData) ? userRolesData : userRolesData.$values || [];
+
+          // 1. Find exact Role ID for 'Student'
+          const studentRoleObj = rawRoles.find((r) => {
+            const name = (r.roleName || r.RoleName || "").toString().toLowerCase();
+            return name === "student";
+          });
+
+          const studentRoleId = studentRoleObj
+            ? String(studentRoleObj.roleId || studentRoleObj.RoleId)
+            : "3";
+
+          // 2. Map UserIDs with Student Role from UserRole table
+          const studentUserIds = new Set();
+          rawUserRoles.forEach((ur) => {
+            const uId = String(ur.userId || ur.UserId || "");
+            const rId = String(ur.roleId || ur.RoleId || "");
+            if (rId === studentRoleId) {
+              studentUserIds.add(uId);
+            }
+          });
+
+          // 3. Strict Filtering: Exclude Faculty/Admin completely
+          const studentUsers = rawUsers.filter((u) => {
+            const uId = String(u.userId || u.UserId || u.id || u.Id || "");
+
+            const directRoleName = (
+              u.roleName ||
+              u.RoleName ||
+              u.role?.roleName ||
+              u.Role?.RoleName ||
+              (typeof u.role === "string" ? u.role : "")
+            )
+              .toString()
+              .toLowerCase();
+
+            const directRoleId = String(
+              u.roleID || u.RoleID || u.roleId || u.RoleId || u.role?.roleID || u.role?.id || ""
+            );
+
+            // Directly Reject if Faculty, Teacher, or Admin
+            if (
+              directRoleName.includes("faculty") ||
+              directRoleName.includes("teacher") ||
+              directRoleName.includes("admin")
+            ) {
+              return false;
+            }
+
+            // Accept ONLY if explicitly identified as Student
+            const isStudent =
+              directRoleName === "student" ||
+              directRoleId === studentRoleId ||
+              studentUserIds.has(uId);
+
+            return isStudent;
+          });
+
+          setStudentOptions(studentUsers);
         }
       } catch (err) {
         console.error("Error fetching dropdown options:", err);
@@ -96,12 +174,13 @@ const AddTask = () => {
         if (!response.ok) throw new Error("Failed to load task details");
         const data = await response.json();
 
-        // Helper to format date string to YYYY-MM-DD for <input type="date" />
         const formatDate = (dateStr) => (dateStr ? dateStr.split("T")[0] : "");
 
         setFormData({
           taskId: data.taskId ?? data.TaskId ?? editTaskId,
           projectId: data.projectId ?? data.ProjectId ?? "",
+          assignedTo:
+            data.assignedTo ?? data.AssignedTo ?? data.userId ?? data.UserId ?? "",
           taskTitle: data.taskTitle ?? data.TaskTitle ?? "",
           taskDescription: data.taskDescription ?? data.TaskDescription ?? "",
           taskStatus: data.taskStatus ?? data.TaskStatus ?? "",
@@ -130,7 +209,7 @@ const AddTask = () => {
     fetchTaskById();
   }, [editTaskId]);
 
-  // Dynamic Progress Percentage Calculation: (EarnedScore / AssignedScore) * 100
+  // Dynamic Progress Percentage Calculation
   useEffect(() => {
     const assigned = parseFloat(formData.assignedScore);
     const earned = parseFloat(formData.earnedScore);
@@ -168,12 +247,8 @@ const AddTask = () => {
     const newErrors = {};
 
     if (!formData.projectId) newErrors.projectId = "Please select a project.";
-    if (!formData.taskTitle.trim())
-      newErrors.taskTitle = "Task title is required.";
-    if (
-      formData.assignedScore === "" ||
-      parseFloat(formData.assignedScore) <= 0
-    ) {
+    if (!formData.taskTitle.trim()) newErrors.taskTitle = "Task title is required.";
+    if (formData.assignedScore === "" || parseFloat(formData.assignedScore) <= 0) {
       newErrors.assignedScore = "Assigned score must be greater than 0.";
     }
 
@@ -181,7 +256,7 @@ const AddTask = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Submit Handler (POST / PUT API Call)
+  // Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -191,6 +266,7 @@ const AddTask = () => {
     const payload = {
       taskId: editTaskId ? parseInt(editTaskId) : 0,
       projectId: parseInt(formData.projectId),
+      assignedTo: formData.assignedTo ? parseInt(formData.assignedTo) : null,
       taskTitle: formData.taskTitle.trim(),
       taskDescription: formData.taskDescription.trim(),
       taskStatus: formData.taskStatus ? parseInt(formData.taskStatus) : null,
@@ -218,14 +294,10 @@ const AddTask = () => {
       });
 
       if (!response.ok) {
-        throw new Error(
-          isEdit ? "Failed to update task." : "Failed to create task."
-        );
+        throw new Error(isEdit ? "Failed to update task." : "Failed to create task.");
       }
 
-      alert(
-        isEdit ? "Task updated successfully!" : "Task added successfully!"
-      );
+      alert(isEdit ? "Task updated successfully!" : "Task added successfully!");
       navigate("/admin/tasks");
     } catch (err) {
       console.error("Save Task Error:", err);
@@ -244,16 +316,10 @@ const AddTask = () => {
 
         <div className="page-content">
           <div className="breadcrumb">
-            <span
-              className="home-link"
-              onClick={() => navigate("/AdminDashboard")}
-            >
+            <span className="home-link" onClick={() => navigate("/AdminDashboard")}>
               Home
             </span>
-            <span
-              className="home-link"
-              onClick={() => navigate("/admin/tasks")}
-            >
+            <span className="home-link" onClick={() => navigate("/admin/tasks")}>
               {" "}
               / Tasks
             </span>
@@ -269,16 +335,15 @@ const AddTask = () => {
                   </>
                 ) : (
                   <>
-                    <AddTaskIcon style={{ verticalAlign: "middle" }} /> Add New
-                    Task
+                    <AddTaskIcon style={{ verticalAlign: "middle" }} /> Add New Task
                   </>
                 )}
               </h2>
             </div>
 
             <form onSubmit={handleSubmit} className="task-form">
-              {/* Project Selection */}
-              <div className="form-row single-col">
+              {/* Project & Assign Student Selection */}
+              <div className="form-row two-col">
                 <div className="form-group">
                   <label htmlFor="projectId">
                     Select Project <span className="required-star">*</span>
@@ -292,9 +357,7 @@ const AddTask = () => {
                     disabled={loadingDropdowns}
                   >
                     <option value="">
-                      {loadingDropdowns
-                        ? "Loading Projects..."
-                        : "-- Select Project --"}
+                      {loadingDropdowns ? "Loading Projects..." : "-- Select Project --"}
                     </option>
                     {projectOptions.map((p) => {
                       const id = p.projectId ?? p.ProjectId;
@@ -306,9 +369,47 @@ const AddTask = () => {
                       );
                     })}
                   </select>
-                  {errors.projectId && (
-                    <span className="error-text">{errors.projectId}</span>
-                  )}
+                  {errors.projectId && <span className="error-text">{errors.projectId}</span>}
+                </div>
+
+                {/* Assigned To (ONLY Student Dropdown) */}
+                <div className="form-group">
+                  <label htmlFor="assignedTo">Assign To (Student Only)</label>
+                  <select
+                    id="assignedTo"
+                    name="assignedTo"
+                    value={formData.assignedTo}
+                    onChange={handleChange}
+                    disabled={loadingDropdowns}
+                  >
+                    <option value="">
+                      {loadingDropdowns ? "Loading Students..." : "-- Select Student --"}
+                    </option>
+                    {studentOptions.map((u, index) => {
+                      const userId =
+                        u.userID ?? u.UserID ?? u.userId ?? u.UserId ?? u.id ?? u.Id;
+
+                      const firstName = u.firstName ?? u.FirstName ?? "";
+                      const lastName = u.lastName ?? u.LastName ?? "";
+                      const fullName = `${firstName} ${lastName}`.trim();
+
+                      const displayName =
+                        fullName ||
+                        u.fullName ||
+                        u.FullName ||
+                        u.userName ||
+                        u.UserName ||
+                        u.name ||
+                        u.Name ||
+                        `Student #${userId}`;
+
+                      return (
+                        <option key={userId || index} value={userId}>
+                          {displayName}
+                        </option>
+                      );
+                    })}
+                  </select>
                 </div>
               </div>
 
@@ -327,9 +428,7 @@ const AddTask = () => {
                     onChange={handleChange}
                     className={errors.taskTitle ? "input-error" : ""}
                   />
-                  {errors.taskTitle && (
-                    <span className="error-text">{errors.taskTitle}</span>
-                  )}
+                  {errors.taskTitle && <span className="error-text">{errors.taskTitle}</span>}
                 </div>
               </div>
 
@@ -430,9 +529,7 @@ const AddTask = () => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="progressPercentage">
-                    Progress (%) - Auto
-                  </label>
+                  <label htmlFor="progressPercentage">Progress (%) - Auto</label>
                   <input
                     type="text"
                     id="progressPercentage"
@@ -509,13 +606,8 @@ const AddTask = () => {
 
               {/* Form Buttons */}
               <div className="form-actions">
-                <button
-                  type="submit"
-                  className="add-btn"
-                  disabled={submitting}
-                >
-                  <SaveIcon fontSize="small" />{" "}
-                  {editTaskId ? "Update Task" : "Save Task"}
+                <button type="submit" className="add-btn" disabled={submitting}>
+                  <SaveIcon fontSize="small" /> {editTaskId ? "Update Task" : "Save Task"}
                 </button>
                 <button
                   type="button"

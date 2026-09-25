@@ -9,13 +9,9 @@ namespace WebApplication1.Model
         [Key]
         public int PriorityID { get; set; }
 
-        [Required]
-        [StringLength(20)]
-        public string PriorityName { get; set; }
+        public string PriorityName { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(20)]
-        public string PriortyCssClass { get; set; }
+        public string PriortyCssClass { get; set; } = string.Empty;
 
         public virtual ICollection<SPM_Task> Tasks { get; set; } = new List<SPM_Task>();
     }

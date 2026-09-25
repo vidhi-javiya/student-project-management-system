@@ -75,13 +75,14 @@ const AddUser = () => {
     setLoading(true);
 
     try {
-      // Step A: Send User data to API
+      // Step A: Build FormData (including roleId)
       const formData = new FormData();
       formData.append("fullName", user.fullName);
       formData.append("email", user.email);
       formData.append("password", user.password);
       formData.append("mobileNumber", user.mobileNumber);
       formData.append("isActive", user.isActive);
+      formData.append("roleId", parseInt(user.roleId)); // 👈 મુખ્ય ફેરફાર: roleId પણ અહીં મોકલવો જરૂરી છે
       formData.append("profilePicture", selectedFile);
 
       const response = await fetch(API_USER, {
@@ -98,7 +99,7 @@ const AddUser = () => {
       const responseData = await response.json();
       const createdUserId = responseData.userId || responseData.UserId || responseData.id;
 
-      // Step B: Direct Insert to SPM_UserRole Table in Backend Database
+      // Step B: Direct Insert to SPM_UserRole Table (જો DB માં Mapping Table વાપરતા હોવ તો)
       if (createdUserId && user.roleId) {
         try {
           await fetch(API_USER_ROLE, {
@@ -115,7 +116,7 @@ const AddUser = () => {
 
         // Step C: Save Mapping in LocalStorage as Backup
         const savedRoleMap = JSON.parse(localStorage.getItem("spm_user_role_map") || "{}");
-        savedRoleMap[createdUserId] = user.roleId;
+        savedRoleMap[createdUserId] = parseInt(user.roleId);
         localStorage.setItem("spm_user_role_map", JSON.stringify(savedRoleMap));
       }
 

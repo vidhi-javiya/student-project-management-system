@@ -455,3 +455,23 @@
   font-weight: 600;
   font-size: 16px;
 }
+
+.assigned-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;   
+  justify-content: center;
+  text-align: center;
+}
+
+.person-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+}
+
+.person-info .icon {
+  margin: 0 !important;
+}

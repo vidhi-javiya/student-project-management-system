@@ -11,6 +11,10 @@ namespace WebApplication1.DTO
 
         public string? ProjectTitle { get; set; }
 
+        public int? AssignedTo { get; set; }
+
+        public string? AssignedStudentName { get; set; }
+
         [Required]
         [StringLength(200)]
         public string TaskTitle { get; set; } = string.Empty;
@@ -32,6 +36,8 @@ namespace WebApplication1.DTO
 
         public decimal? EarnedScore { get; set; }
 
+        public decimal? Rating { get; set; }
+
         public decimal ProgressPercentage { get; set; }
 
         public DateTime? StartDate { get; set; }
@@ -45,6 +51,9 @@ namespace WebApplication1.DTO
 
         [StringLength(500)]
         public string? StudentRemarks { get; set; }
+
+        [StringLength(500)]
+        public string? FileUrl { get; set; }
 
         public bool? IsDeleted { get; set; }
     }

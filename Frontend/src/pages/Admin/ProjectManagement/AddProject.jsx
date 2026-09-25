@@ -37,7 +37,7 @@ const AddProject = () => {
     facultyId: "",
     studentId: "",
     totalTasks: 0,
-    completedTasks: 0
+    completedTasks: 0,
   });
 
   // 1. Fetch Statuses
@@ -47,12 +47,12 @@ const AddProject = () => {
         setLoadingStatuses(true);
         const res = await fetch(API_STATUS);
         if (!res.ok) throw new Error("Failed to fetch status list");
-        
+
         const data = await res.json();
         const rawStatuses = Array.isArray(data) ? data : data.$values || [];
-        
+
         setStatusList(rawStatuses);
-        
+
         if (rawStatuses.length > 0) {
           const defaultStatusId = rawStatuses[0].statusID ?? rawStatuses[0].StatusID ?? "";
           setFormData((prev) => ({ ...prev, projectStatus: defaultStatusId }));
@@ -67,7 +67,7 @@ const AddProject = () => {
     fetchStatuses();
   }, []);
 
-  // 2. Fetch Users & Roles Logic
+  // 2. Fetch Users & Precise Role Filtering
   useEffect(() => {
     const fetchUsersAndRoles = async () => {
       try {
@@ -76,7 +76,7 @@ const AddProject = () => {
         const [usersRes, rolesRes, userRolesRes] = await Promise.all([
           fetch(API_USER),
           fetch(API_ROLE).catch(() => null),
-          fetch(API_USER_ROLE).catch(() => null)
+          fetch(API_USER_ROLE).catch(() => null),
         ]);
 
         if (!usersRes.ok) throw new Error("Failed to fetch users");
@@ -89,17 +89,17 @@ const AddProject = () => {
         const rawRoles = Array.isArray(rolesData) ? rolesData : rolesData.$values || [];
         const rawUserRoles = Array.isArray(userRolesData) ? userRolesData : userRolesData.$values || [];
 
-        // Role Mapping
+        // Step A: Create Role ID -> Role Name Dictionary
         const roleDict = {};
         rawRoles.forEach((r) => {
           const rId = String(r.roleId || r.RoleId || "");
-          const rName = r.roleName || r.RoleName || "";
-          if (rId && rName) {
-            roleDict[rId] = rName.toLowerCase();
+          const rName = (r.roleName || r.RoleName || "").toLowerCase();
+          if (rId) {
+            roleDict[rId] = rName;
           }
         });
 
-        // User Role Mapping
+        // Step B: Create User ID -> Role Name Mapping (From UserRole Junction API)
         const userRoleMap = {};
         rawUserRoles.forEach((ur) => {
           const uId = String(ur.userId || ur.UserId || "");
@@ -109,29 +109,41 @@ const AddProject = () => {
           }
         });
 
+        // Step C: Fallback LocalStorage Role Mapping Safety
+        const localSavedMap = JSON.parse(localStorage.getItem("spm_user_role_map") || "{}");
+
         const faculties = [];
         const students = [];
-        const allUsers = [];
 
         rawUsers.forEach((u) => {
           const uId = u.userId || u.UserId || u.id;
           const uName = u.fullName || u.FullName || u.userName || u.UserName || `User ${uId}`;
-          const userRole = (userRoleMap[String(uId)] || "").toLowerCase();
-
           const formattedUser = { id: parseInt(uId), name: uName };
-          allUsers.push(formattedUser);
 
-          if (userRole.includes("faculty") || userRole.includes("teacher") || userRole.includes("guide")) {
+          // Get Direct Role ID attached with User Model
+          const directRoleId = String(u.roleId || u.RoleId || localSavedMap[uId] || "");
+          
+          // Get Role Name from Dictionary or Mapping
+          let roleName = (roleDict[directRoleId] || userRoleMap[String(uId)] || "").toLowerCase();
+
+          // Strict Role Identification Check
+          const isFaculty =
+            roleName.includes("faculty") ||
+            roleName.includes("teacher") ||
+            roleName.includes("guide") ||
+            roleName.includes("professor");
+
+          const isStudent = roleName.includes("student");
+
+          if (isFaculty) {
             faculties.push(formattedUser);
-          } else if (userRole.includes("student")) {
+          } else if (isStudent) {
             students.push(formattedUser);
           }
         });
 
-        // Fallback safety if role-mapping is empty
-        setFacultyList(faculties.length > 0 ? faculties : allUsers);
-        setStudentList(students.length > 0 ? students : allUsers);
-
+        setFacultyList(faculties);
+        setStudentList(students);
       } catch (err) {
         console.error("Error fetching user data:", err);
       } finally {
@@ -170,15 +182,15 @@ const AddProject = () => {
         facultyId: parseInt(formData.facultyId),
         studentId: parseInt(formData.studentId),
         totalTasks: total,
-        completedTasks: completed
+        completedTasks: completed,
       };
 
       const res = await fetch(API_PROJECT, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (res.ok) {
@@ -186,8 +198,7 @@ const AddProject = () => {
         navigate("/admin/projects");
       } else {
         const errText = await res.text();
-        
-        // Duplicate Title Error handling
+
         if (errText.includes("already exists") || res.status === 400 || res.status === 409) {
           alert("આ શીર્ષક (Project Title) વાળો પ્રોજેક્ટ પહેલાથી જ અસ્તિત્વમાં છે. કૃપા કરીને બીજું નામ લખો.");
         } else {
@@ -203,9 +214,10 @@ const AddProject = () => {
   };
 
   // Real-time Progress Calculated for UI Preview
-  const previewProgress = formData.totalTasks > 0
-    ? Math.round((formData.completedTasks / formData.totalTasks) * 100)
-    : 0;
+  const previewProgress =
+    formData.totalTasks > 0
+      ? Math.round((formData.completedTasks / formData.totalTasks) * 100)
+      : 0;
 
   return (
     <div className="dashboard-layout">
@@ -376,13 +388,21 @@ const AddProject = () => {
               {/* Progress Bar Preview */}
               <div className="form-row single-col" style={{ marginTop: "5px" }}>
                 <label>Progress Preview ({previewProgress}%)</label>
-                <div style={{ width: "100%", backgroundColor: "#e0e0e0", height: "10px", borderRadius: "5px", overflow: "hidden" }}>
+                <div
+                  style={{
+                    width: "100%",
+                    backgroundColor: "#e0e0e0",
+                    height: "10px",
+                    borderRadius: "5px",
+                    overflow: "hidden",
+                  }}
+                >
                   <div
                     style={{
                       width: `${previewProgress > 100 ? 100 : previewProgress}%`,
                       backgroundColor: previewProgress === 100 ? "#4caf50" : "#2196f3",
                       height: "100%",
-                      transition: "width 0.3s ease"
+                      transition: "width 0.3s ease",
                     }}
                   ></div>
                 </div>

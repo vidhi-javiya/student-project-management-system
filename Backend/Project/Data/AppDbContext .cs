@@ -28,13 +28,22 @@ namespace WebApplication1.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // User 
+            modelBuilder.Entity<SPM_User>(entity =>
+            {
+                entity.HasOne(u => u.Role)
+                      .WithMany(r => r.Users)
+                      .HasForeignKey(u => u.RoleId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
             // UserRole 
             modelBuilder.Entity<SPM_UserRole>(entity =>
             {
                 entity.HasKey(e => e.RolePermissionId);
 
                 entity.HasOne(e => e.Role)
-                      .WithMany()
+                      .WithMany(r => r.SPM_UserRoles)
                       .HasForeignKey(e => e.RoleId)
                       .OnDelete(DeleteBehavior.Restrict);
 
@@ -89,6 +98,12 @@ namespace WebApplication1.Data
                       .HasForeignKey(e => e.PriorityID)
                       .OnDelete(DeleteBehavior.Restrict);
 
+               //user
+                entity.HasOne(e => e.AssignedUser)
+                      .WithMany(u => u.AssignedTasks)
+                      .HasForeignKey(e => e.AssignedTo)
+                      .OnDelete(DeleteBehavior.Restrict);
+
                 entity.Property(e => e.AssignedScore)
                       .HasPrecision(5, 2);
 
@@ -100,4 +115,4 @@ namespace WebApplication1.Data
             });
         }
     }
-    }
+}

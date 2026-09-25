@@ -11,50 +11,39 @@ namespace WebApplication1.Model
         [Column("ProjectId")]
         public int ProjectId { get; set; }
 
-        [Required]
-        [StringLength(200)]
         [Column("ProjectTitle")]
         public string ProjectTitle { get; set; } = string.Empty;
 
         [Column("Description")]
         public string? Description { get; set; }
 
-        [Required]
         [Column("StudentId")]
         public int StudentId { get; set; }
 
-        [Required]
         [Column("FacultyId")]
         public int FacultyId { get; set; }
 
-        [Required]
         [Column("AssignedDate")]
         public DateTime AssignedDate { get; set; } = DateTime.Now;
 
         [Column("IsDeleted")]
         public bool? IsDeleted { get; set; }
 
-        [Required]
         [Column("ProjectStatus")]
         public int ProjectStatus { get; set; }
 
-        [Required]
         [Column("StartDate")]
         public DateTime StartDate { get; set; }
 
-        [Required]
         [Column("EndDate")]
         public DateTime EndDate { get; set; }
 
-        [Required]
         [Column("TotalTasks")]
         public int TotalTasks { get; set; }
 
-        [Required]
         [Column("CompletedTasks")]
         public int CompletedTasks { get; set; }
 
-        [Required]
         [Column(TypeName = "decimal(5,2)")]
         public decimal ProgressPercentage { get; set; }
 
